@@ -63,7 +63,7 @@ const client = {
                 const pool = db.connect()
                 const req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,sexe,
                                     TO_CHAR(cl.date_naissance, 'dd-mm-yyyy') AS date_naissance,photo,
-                                    localisation,num_id,ent.nom AS entreprise 
+                                    localisation,num_id,ent.id AS entreprise_id,ent.nom AS entreprise 
                                     FROM client cl, entreprise ent
                                     WHERE cl.entreprise = ent.id
                                     AND parent = 0 OR parent = NULL`
@@ -125,13 +125,20 @@ const client = {
             resolve(res)
         })
     },
-    updateParent:(id,prenom,nom,postnom,sexe,date_naissance,photo,localisation,
-        num_id, entreprise,parent,relation) =>{
+    updateParent:(id,prenom,nom,postnom,sexe,date_naissance,localisation,
+        num_id, entreprise) =>{
         return new Promise(async (resolve, reject)=>{
+            try{
+
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
             const pool = db.connect()
-            const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,date_naissance=$6,photo=$7,
-            localisation=$8,num_id=$9,entreprise=$10,parent=$11,relation=$12 WHERE id = $1`
-            const res =  await pool.query(req,[id,nom])
+            const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,date_naissance=$6,
+            localisation=$7,num_id=$8,entreprise=$9 WHERE id = $1`
+            const res =  await pool.query(req,[id,prenom,nom,postnom,sexe,date_naissance,localisation,
+                num_id, entreprise])
             resolve(res)
         })
     },
@@ -140,7 +147,7 @@ const client = {
             const pool = db.connect()
             const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,
                 date_naissance=$6,photo=$7,relation=$8 WHERE id = $1`
-            const res =  await pool.query(req,[id,nom,postnom,sexe,date_naissance,photo,relation])
+            const res =  await pool.query(req,[id,prenom,nom,postnom,sexe,date_naissance,photo,relation])
             resolve(res)
         })
     }

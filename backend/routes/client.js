@@ -42,4 +42,23 @@ client.post('/', (req,res)=>{
         })
 })
 
+client.put('/', (req,res)=>{
+    console.log("/PUT client")
+    let id = req.body.id
+    let prenom = req.body.prenom
+    let nom = req.body.nom
+    let postnom = req.body.postnom
+    let sexe = req.body.sexe
+    let date_naissance = req.body.date_naissance
+    let localisation = req.body.localisation
+    let num_id = req.body.matricule
+    let entreprise = req.body.entreprise
+
+    Client.updateParent(id,prenom,nom,postnom,sexe,date_naissance,
+                            localisation,num_id,entreprise)
+                            .then(outcome =>{
+            res.status(200).json({count: outcome.rowCount})
+        })
+})
+
 module.exports = client

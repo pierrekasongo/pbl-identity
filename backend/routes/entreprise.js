@@ -7,7 +7,7 @@ router.get('/', (req,res)=>{
     console.log("Get all entreprise")
     Entreprise.find().then(data =>{
         console.log(data.rows)
-        res.status(200).json(data)
+        res.status(200).send(data.rows)
     })
 })
 
