@@ -3,17 +3,13 @@ const db = require('./db')
 
 const entreprise = {
 
-    find:(id) =>{
+    find:() =>{
         return new Promise(async (resolve, reject)=>{
             let res;
             try{
                 const pool = db.connect()
-                if(id){
-                    const req = `SELECT * FROM entreprise WHERE id = $1`
-                    res =  await pool.query(req,[id])
-                }else{
-                    res =  await pool.query("SELECT * FROM entreprise")
-                }
+                const req = `SELECT * FROM entreprise`
+                res =  await pool.query(req)
                 resolve(res)
             }catch(err){
                 console.log(err.message)
@@ -27,7 +23,7 @@ const entreprise = {
         return new Promise(async (resolve, reject)=>{
             try{
                 const pool = db.connect()
-                const req = `INSERT INTO entreprise(nom) VALUES($1)`
+                const req = `INSERT INTO entreprise(nom) VALUES($1) RETURNING id`
                 const res =  await pool.query(req,[nom])
                 resolve(res)
             }catch(err){
@@ -39,16 +35,28 @@ const entreprise = {
     },
     delete:(id) =>{
         return new Promise(async (resolve, reject)=>{
-            const pool = db.connect()
-            const req = `DELETE FROM entreprise WHERE id=$1`
-            return  await pool.query(text,[id])
+            try{
+                const pool = db.connect()
+                const req = `DELETE FROM entreprise WHERE id=$1`
+                const res =  await pool.query(req,[id])
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject
+            }
         })
     },
     update:(id,nom) =>{
         return new Promise(async (resolve, reject)=>{
-            const pool = db.connect()
-            const req = `UPDATE entreprise SET nom = $2 WHERE id = $1`
-            return  await pool.query(text,[id,nom])
+            try{
+                const pool = db.connect()
+                const req = `UPDATE entreprise SET nom = $2 WHERE id = $1`
+                const res = await pool.query(req,[id,nom])
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
         })
     }
 }

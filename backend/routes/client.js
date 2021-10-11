@@ -4,15 +4,25 @@ const winston = require('winston')
 const client = express.Router()
 const Client = require('../modules/Client')
 
-client.get('/find?id', (req,res)=>{
 
-  let id = req.params.id
-    
-    Client.find(id).then(data =>{
-            console.log(data)
-            res.status(200).json(data)
-        })
+client.get('/', (req,res)=>{
+    console.log("Get all Clients")
+    Client.findParents().then(data =>{
+        res.status(200).json(data.rows)
+    })
 })
+
+client.get('/:id', (req,res)=>{
+    console.log("Find by Id")
+    let clientId = req.params.id
+    
+    Client.find(clientId).then(data =>{
+        console.log(data.rows)
+        res.status(200).json(data.rows[0])
+    })
+})
+
+
 client.post('/', (req,res)=>{
 
     let prenom = req.body.prenom
@@ -20,16 +30,15 @@ client.post('/', (req,res)=>{
     let postnom = req.body.postnom
     let sexe = req.body.sexe
     let date_naissance = req.body.date_naissance
-    let photo = req.body.photo
     let localisation = req.body.localisation
-    let num_id = req.body.num_id
+    let photo = ""
+    let num_id = req.body.matricule
     let entreprise = req.body.entreprise
-    let parent = req.body.parent
-    let relation = req.body.relation
-
-    Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
+    let parent = 0
+    let relation = "Agent"
+    Client.createParent(prenom,nom,postnom,sexe,date_naissance,photo,
         localisation,num_id,entreprise,parent,relation).then(outcome =>{
-            res.status(200).json(outcome.rows)
+            res.status(200).json({count: outcome.rowCount})
         })
 })
 

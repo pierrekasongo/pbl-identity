@@ -1,36 +1,30 @@
 const express = require('express')
 const winston = require('winston')
-//const { client } = require('../modules/Client')
-const client = express.Router()
-const Client = require('../modules/Client')
+const router = express.Router()
+const User = require('../modules/User')
 
-client.get('/find?id', (req,res)=>{
+router.get('/', (req,res)=>{
 
-  let id = req.params.id
-    
-    Client.find(id).then(data =>{
-            console.log(data)
-            res.status(200).json(data)
-        })
+  console.log("Get all Users")
+  User.find().then(data =>{
+        console.log(data.rows)
+        res.status(200).json(data.rows)
+    })
+   
 })
-client.post('/', (req,res)=>{
 
-    let prenom = req.body.prenom
+router.post('/', (req,res)=>{
+    console.log("POST new User")
+    let login = req.body.login
     let nom = req.body.nom
-    let postnom = req.body.postnom
-    let sexe = req.body.sexe
-    let date_naissance = req.body.date_naissance
-    let photo = req.body.photo
-    let localisation = req.body.localisation
-    let num_id = req.body.num_id
-    let entreprise = req.body.entreprise
-    let parent = req.body.parent
-    let relation = req.body.relation
+    let password = req.body.password
+    let role = req.body.role
 
-    Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
-        localisation,num_id,entreprise,parent,relation).then(outcome =>{
-            res.status(200).json(outcome.rows)
-        })
+    let _password = User.hashPassword(password, login)
+   
+    User.create(login,nom,_password.hash,role).then(data =>{
+        res.status(200).json(data.rows)
+    })
 })
 
-module.exports = client
+module.exports = router

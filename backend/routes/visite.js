@@ -1,36 +1,38 @@
 const express = require('express')
 const winston = require('winston')
-//const { client } = require('../modules/Client')
-const client = express.Router()
-const Client = require('../modules/Client')
+const visite = express.Router()
+const Visite = require('../modules/Visite')
 
-client.get('/find?id', (req,res)=>{
 
-  let id = req.params.id
+visite.get('/:id', (req,res)=>{
     
-    Client.find(id).then(data =>{
-            console.log(data)
-            res.status(200).json(data)
+    let clientId = req.params.id
+    if(clientId > 0){
+        console.log("Find Visites by Client")
+        Visite.find(clientId).then(data =>{
+            console.log(data.rows)
+            res.status(200).json(data.rows)
         })
+    }else{
+        console.log("Find All Visites")
+        Visite.findAll().then(data =>{
+            console.log(data.rows)
+            res.status(200).json(data.rows)
+        })
+    }
+    
 })
-client.post('/', (req,res)=>{
 
-    let prenom = req.body.prenom
-    let nom = req.body.nom
-    let postnom = req.body.postnom
-    let sexe = req.body.sexe
-    let date_naissance = req.body.date_naissance
-    let photo = req.body.photo
-    let localisation = req.body.localisation
-    let num_id = req.body.num_id
-    let entreprise = req.body.entreprise
-    let parent = req.body.parent
-    let relation = req.body.relation
+visite.post('/', (req,res)=>{
+    console.log("Post New Visite")
+    let date_visite = req.body.date_visite
+    let motif = req.body.motif
+    let utilisateur = req.body.utilisateur
+    let client = req.body.client
 
-    Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
-        localisation,num_id,entreprise,parent,relation).then(outcome =>{
+    Visite.create(date_visite,motif,utilisateur,client).then(outcome =>{
             res.status(200).json(outcome.rows)
         })
 })
 
-module.exports = client
+module.exports = visite

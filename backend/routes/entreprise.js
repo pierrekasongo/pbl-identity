@@ -1,16 +1,17 @@
 const express = require('express')
 const winston = require('winston')
-const ent = express.Router()
+const router = express.Router()
 const Entreprise = require('../modules/Entreprise')
 
-ent.get('/', (req,res)=>{
+router.get('/', (req,res)=>{
     console.log("Get all entreprise")
     Entreprise.find().then(data =>{
-              res.status(200).json(data.rows)
+        console.log(data.rows)
+        res.status(200).json(data)
     })
-  })
+})
 
-  ent.get('/find?id', (req,res)=>{
+router.get('/find?id', (req,res)=>{
 
   let id = req.params.id
     
@@ -20,12 +21,30 @@ ent.get('/', (req,res)=>{
         })
 })
 
-ent.post('/', (req,res)=>{
-
+router.put('/', (req,res)=>{
+    console.log("Edit entreprise")
+    let id = req.body.id
     let nom = req.body.nom
 
-    Entreprise.create(nom,).then(outcome =>{
-        res.status(200).json(outcome.rows)
+    Entreprise.update(id,nom).then(outcome =>{
+        console.log("RESULT ",outcome.rowCount)
+        res.status(200).json({count:outcome.rowCount})
     })
 })
-module.exports = ent
+router.post('/', (req,res)=>{
+    console.log("Post new entreprise")
+    let nom = req.body.nom
+    Entreprise.create(nom,).then(outcome =>{
+        console.log(outcome.rows[0])
+        res.status(200).json(outcome.rows[0])
+    })
+})
+router.delete('/:id', (req,res)=>{
+    console.log("DELETE entreprise")
+    let id = req.params.id
+    Entreprise.delete(id).then(outcome =>{
+        console.log(outcome.rowCount)
+        res.status(200).json({count:outcome.rowCount})
+    })
+})
+module.exports = router

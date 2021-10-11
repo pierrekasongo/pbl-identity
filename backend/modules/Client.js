@@ -6,54 +6,92 @@ const client = {
 
     find:(id) =>{
         return new Promise(async (resolve, reject)=>{
-            const pool = db.connect()
-            const req = `SELECT * FROM Client WHERE id = $1`
-            const res = await pool.query(req,[id])
-            resolve(res)
+            try{
+                const pool = db.connect()
+                let req,res
+                if(id){
+                    req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,
+                                sexe,TO_CHAR(cl.date_naissance, 'dd-mm-yyyy') AS date_naissance,photo,
+                                localisation,num_id,ent.nom AS entreprise 
+                                FROM client cl, entreprise ent
+                                WHERE cl.entreprise = ent.id
+                                AND parent = 0 OR parent = NULL
+                                AND cl.id = $1`
+                    res = await pool.query(req,[id])
+                }else{
+                    req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,
+                            sexe,TO_CHAR(cl.date_naissance, 'dd-mm-yyyy') AS date_naissance,photo,
+                            localisation,num_id,ent.nom AS entreprise 
+                            FROM client cl, entreprise ent
+                            WHERE cl.entreprise = ent.id
+                            AND parent = 0 OR parent = NULL`
+                    res = await pool.query(req)
+                }
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
         })
     },
     findByName:(nom) =>{
         return new Promise(async (resolve, reject)=>{
             const pool = db.connect()
-            const req = `SELECT * FROM Client WHERE nom LIKE $1`
+            const req = `SELECT * FROM client WHERE nom LIKE $1`
             const res =   await pool.query(req,[nom])
             resolve(res)
         })
     },
     findByParent:(parent) =>{
         return new Promise(async (resolve, reject)=>{
-            const pool = db.connect()
-            const req = `SELECT * FROM Client WHERE parent = $1`
-            const res =   await pool.query(req,[parent])
-            resolve(res)
+            try{
+                const pool = db.connect()
+                req = `SELECT id, prenom, nom, 
+                        postnom,sexe,TO_CHAR(date_naissance, 'dd-mm-yyyy') AS date_naissance,photo,localisation,relation
+                        FROM client WHERE parent = $1`
+                const res =   await pool.query(req,[parent])
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
         })
     },
     findParents:() =>{
         return new Promise(async (resolve, reject)=>{
-            const pool = db.connect()
-            const req = `SELECT * FROM Client WHERE parent = 0`
-            const res =   await pool.query(req)
-            resolve(res)
+            try{
+                const pool = db.connect()
+                const req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,sexe,
+                                    TO_CHAR(cl.date_naissance, 'dd-mm-yyyy') AS date_naissance,photo,
+                                    localisation,num_id,ent.nom AS entreprise 
+                                    FROM client cl, entreprise ent
+                                    WHERE cl.entreprise = ent.id
+                                    AND parent = 0 OR parent = NULL`
+                const res =   await pool.query(req)
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
         })
     },
     findByCompany:(company) =>{
         return new Promise(async (resolve, reject)=>{
             const pool = db.connect()
-            const req = `SELECT * FROM Client WHERE entreprise = $1`
+            const req = `SELECT * FROM client WHERE entreprise = $1`
             const res= pool.query(req,[company])
             resolve(res)
         })
     },
     createParent:(prenom,nom,postnom,sexe,date_naissance,photo,localisation,
-        num_id, entreprise) =>{
+        num_id, entreprise,parent,relation) =>{
         return new Promise(async (resolve, reject)=>{
             try{
                 const pool = db.connect()
                 const req = `INSERT INTO client(prenom, nom, postnom,sexe,date_naissance,photo,
-                    localisation,num_id,entreprise) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) 
-                    RETURNING id`
+                    localisation,num_id,entreprise,parent,relation) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`
                 const res =  await pool.query(req,[prenom,nom,postnom,sexe,date_naissance,
-                    photo,localisation,num_id,entreprise])
+                    photo,localisation,num_id,entreprise,parent, relation])
                 resolve(res)
             }catch(err){
                 winston.error(err.message)
@@ -82,7 +120,7 @@ const client = {
     delete:(id) =>{
         return new Promise(async (resolve, reject)=>{
             const pool = db.connect()
-            const req = `DELETE FROM Client WHERE id=$1`
+            const req = `DELETE FROM client WHERE id=$1`
             const res =  await pool.query(req,[id])
             resolve(res)
         })
@@ -91,7 +129,7 @@ const client = {
         num_id, entreprise,parent,relation) =>{
         return new Promise(async (resolve, reject)=>{
             const pool = db.connect()
-            const req = `UPDATE Client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,date_naissance=$6,photo=$7,
+            const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,date_naissance=$6,photo=$7,
             localisation=$8,num_id=$9,entreprise=$10,parent=$11,relation=$12 WHERE id = $1`
             const res =  await pool.query(req,[id,nom])
             resolve(res)
@@ -100,7 +138,7 @@ const client = {
     updateChild:(id,prenom,nom,postnom,sexe,date_naissance,photo,relation) =>{
         return new Promise(async (resolve, reject)=>{
             const pool = db.connect()
-            const req = `UPDATE Client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,
+            const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,
                 date_naissance=$6,photo=$7,relation=$8 WHERE id = $1`
             const res =  await pool.query(req,[id,nom,postnom,sexe,date_naissance,photo,relation])
             resolve(res)
