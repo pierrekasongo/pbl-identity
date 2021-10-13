@@ -2,8 +2,9 @@ const express = require('express')
 const winston = require('winston')
 const router = express.Router()
 const Entreprise = require('../modules/Entreprise')
+const auth = require('../middleware/auth')
 
-router.get('/', (req,res)=>{
+router.get('/', auth,(req,res)=>{
     console.log("Get all entreprise")
     Entreprise.find().then(data =>{
         console.log(data.rows)
@@ -11,7 +12,7 @@ router.get('/', (req,res)=>{
     })
 })
 
-router.get('/find?id', (req,res)=>{
+router.get('/find?id',auth, (req,res)=>{
 
   let id = req.params.id
     
@@ -21,7 +22,7 @@ router.get('/find?id', (req,res)=>{
         })
 })
 
-router.put('/', (req,res)=>{
+router.put('/', auth,(req,res)=>{
     console.log("Edit entreprise")
     let id = req.body.id
     let nom = req.body.nom
@@ -31,7 +32,7 @@ router.put('/', (req,res)=>{
         res.status(200).json({count:outcome.rowCount})
     })
 })
-router.post('/', (req,res)=>{
+router.post('/',auth, (req,res)=>{
     console.log("Post new entreprise")
     let nom = req.body.nom
     Entreprise.create(nom,).then(outcome =>{
@@ -39,7 +40,7 @@ router.post('/', (req,res)=>{
         res.status(200).json(outcome.rows[0])
     })
 })
-router.delete('/:id', (req,res)=>{
+router.delete('/:id',auth,(req,res)=>{
     console.log("DELETE entreprise")
     let id = req.params.id
     Entreprise.delete(id).then(outcome =>{

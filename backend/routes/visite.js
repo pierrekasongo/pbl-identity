@@ -2,9 +2,9 @@ const express = require('express')
 const winston = require('winston')
 const visite = express.Router()
 const Visite = require('../modules/Visite')
+const auth = require('../middleware/auth')
 
-
-visite.get('/:id', (req,res)=>{
+visite.get('/:id', auth,(req,res)=>{
     
     let clientId = req.params.id
     if(clientId > 0){
@@ -23,7 +23,7 @@ visite.get('/:id', (req,res)=>{
     
 })
 
-visite.post('/', (req,res)=>{
+visite.post('/',auth, (req,res)=>{
     console.log("Post New Visite")
     let date_visite = req.body.date_visite
     let motif = req.body.motif

@@ -150,6 +150,21 @@ const client = {
             const res =  await pool.query(req,[id,prenom,nom,postnom,sexe,date_naissance,photo,relation])
             resolve(res)
         })
+    },
+
+    uploadPhoto:(id,photo) =>{
+        return new Promise(async (resolve, reject)=>{
+            try{
+                const pool = db.connect()
+                const req = `UPDATE client SET photo = $2 WHERE id = $1`
+                const res =  await pool.query(req,[id,photo])
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
+            
+        })
     }
 }
 module.exports = client

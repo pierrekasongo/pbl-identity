@@ -3,8 +3,9 @@ const winston = require('winston')
 //const { client } = require('../modules/Client')
 const client = express.Router()
 const Client = require('../modules/Client')
+const auth = require('../middleware/auth')
 
-client.get('/find?id', (req,res)=>{
+client.get('/find?id',auth,(req,res)=>{
 
   let id = req.params.id
     
@@ -13,7 +14,7 @@ client.get('/find?id', (req,res)=>{
             res.status(200).json(data)
         })
 })
-client.post('/', (req,res)=>{
+client.post('/',auth, (req,res)=>{
 
     let prenom = req.body.prenom
     let nom = req.body.nom

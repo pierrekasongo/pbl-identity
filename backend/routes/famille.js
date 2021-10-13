@@ -2,8 +2,9 @@ const express = require('express')
 const winston = require('winston')
 const router = express.Router()
 const Famille = require('../modules/Client')
+const auth = require('../middleware/auth')
 
-router.get('/:id', (req,res) => {
+router.get('/:id', auth,(req,res) => {
     console.log("Find Famille by parent")
     let parentId = req.params.id
     
@@ -13,7 +14,7 @@ router.get('/:id', (req,res) => {
     })
 })
 
-router.post('/', (req,res)=>{
+router.post('/', auth,(req,res)=>{
     console.log("Create Famille")
     let prenom = req.body.prenom
     let nom = req.body.nom

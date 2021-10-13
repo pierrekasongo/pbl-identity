@@ -3,5 +3,7 @@
     "DB_PWD":"hapi",
     "DB_NAME":"pbl",
     "DB_HOST":"localhost",
-    "DB_PORT":5432
+    "DB_PORT":5432,
+    "SALT":"abc123XYZ",
+    "TOKEN_KEY":"abceqklho$qoe"
 }

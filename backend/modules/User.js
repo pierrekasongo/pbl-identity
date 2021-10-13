@@ -1,6 +1,7 @@
 var express = require('express')
 const crypto = require('crypto')
 const db = require('./db')
+const Utils = require('./Utils')
 const user = {
 
     find:() =>{
@@ -10,6 +11,20 @@ const user = {
                 const pool = db.connect()
                 const req = `SELECT id,login,nom,role FROM utilisateur`
                 res =  await pool.query(req)
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            } 
+        })
+    },
+    findByLogin:(login) =>{
+        return new Promise(async (resolve, reject)=>{
+            let res;
+            try{
+                const pool = db.connect()
+                const req = `SELECT id,login,nom,role FROM utilisateur WHERE login = $1`
+                res =  await pool.query(req,[login])
                 resolve(res)
             }catch(err){
                 console.log(err.message)
@@ -85,10 +100,6 @@ const user = {
                 reject()
             }
         })
-    },
-    hashPassword:(password, salt) => {
-        let hash = crypto.pbkdf2Sync( password, salt, 1000, 64, 'sha512' ).toString('hex')
-        return { hash: hash, salt: salt }
     }
 }
 module.exports = user
