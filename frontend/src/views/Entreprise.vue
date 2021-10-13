@@ -154,6 +154,7 @@
     },
     methods: {
       initialize(){
+        console.log("Entreprise")
         fetch("/entreprise/").then(resp => {
           return resp.json()
         }).then(data =>{

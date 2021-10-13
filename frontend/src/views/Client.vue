@@ -54,6 +54,18 @@
             <v-card-text>
               <v-container>
                 <v-row>
+                  <template v-if="editedIndex > -1">
+                    <v-col 
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <img :src="`/uploads/${editedItem.photo}`" alt="" width="50" height="50">
+                  </v-col>
+                  </template>                
+                </v-row>
+
+                <v-row>
                   <v-col
                     cols="12"
                     sm="6"
@@ -130,14 +142,14 @@
                     sm="6"
                     md="4"
                   >
-                    <v-combobox
-                      v-model="editedItem.entreprise"
+                    <v-select
+                      label="Entreprise"
+                      v-model="editedItem.entreprise_id"
                       :items="entreprise"
                       item-text="nom"
                       item-value="id"
                       return-object
-                      label="Entreprise"
-                    ></v-combobox>
+                    ></v-select>
                   </v-col>
 
                   <v-col
@@ -146,7 +158,7 @@
                     md="4"
                   >
                     <v-text-field
-                      v-model="editedItem.matricule"
+                      v-model="editedItem.num_id"
                       label="Matricule"
                     ></v-text-field>
                   </v-col>
@@ -240,11 +252,13 @@
           { text: 'PostNom', value: 'postnom', align: 'right',groupable: false },
           { text: 'Sexe', value: 'sexe', align: 'right'},
           { text: 'Date naissance', value: 'date_naissance', align: 'right',groupable: false },
-          {text: 'Entreprise', value: 'entreprise', align: 'right'},
+          { text: 'Localisation', value: 'localisation', align: 'right',groupable: false },
+          {text:  'Entreprise', value: 'entreprise', align: 'right'},
           { text: 'Matricule', value: 'num_id', align: 'right' ,groupable: false},
           { text: 'Actions', value: 'actions', sortable: false },
         ],
         data:[],
+       
         editedIndex: -1,
         editedItem: {
           id:0,
@@ -288,8 +302,11 @@
           console.log("ENTREPRISES")
           return resp.json()
         }).then(data =>{
-          console.log("Entreprises ",data.rows)
-          this.entreprise = data.rows
+          console.log("Entreprises ",data)
+          /*data.forEach(d => {
+            this.entreprise.push({value: d.id, text:d.nom})
+          });*/
+          this.entreprise = data
         }).catch(err => console.log(err))
       },
       handleRowClick:function(row){
@@ -346,6 +363,9 @@
 
       save () {
         if (this.editedIndex > -1) {
+
+          console.log("EDITING", this.editedItem.entreprise_id)
+          
           const options = {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -357,8 +377,8 @@
               sexe: this.editedItem.sexe,
               date_naissance:this.editedItem.date_naissance,
               localisation: this.editedItem.localisation,
-              entrprise: this.editedItem.entreprise,
-              matricule: this.editedItem.matricule,
+              entreprise: this.editedItem.entreprise_id,
+              matricule: this.editedItem.num_id,
             })
           };
           fetch(`/client/`, options).then(resp => {
@@ -367,11 +387,10 @@
             console.log("ID ",data.count)
             if(data.count > 0){
               this.initialize()
-              //Object.assign(this.data[this.editedIndex], this.editedItem)
             }
           }).catch(err => console.log(err))
         } else {
-          console.log("POST",this.editedItem.nom)
+          console.log("POSTING")
           const options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },

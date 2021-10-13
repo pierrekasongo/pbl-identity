@@ -1,54 +1,141 @@
-
+<style scoped>
+.card-detail{
+  margin:20px;
+  padding:20px;
+}
+</style>
 <template>
-  <v-card
-    :loading="loading"
-    class="mx-auto my-12"
-    max-width="374"
-  >
-    <template slot="progress">
-      <v-progress-linear
-        color="deep-purple"
-        height="10"
-        indeterminate
-      ></v-progress-linear>
-    </template>
-
-    <v-img
-      height="250"
-      src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
-    ></v-img>
-
-    <v-card-title>{{client.nom}} {{client.postnom}} {{client.prenom}}</v-card-title>
-
-    <v-card-text>
-      <v-row
-        align="center"
-        class="mx-0"
+<v-card class="card-detail">
+    <v-row>
+      <v-col
+        cols="12"
+        sm="6"
+        md="4"
       >
+        <v-img
+              height="100"
+              width="80"
+              :src="`/uploads/${client.photo}`"
+            ></v-img>
 
-        <div class="grey--text ms-4">
-          Sexe: {{client.sexe}} | Date de naissance: {{ client.date_naissance}}
-        </div>
+      <v-col
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        <v-btn
+          color="success"
+          dark
+          small
+          @click="gotoUpload"
+        >
+          <v-icon dark>mdi-camera</v-icon>
+        </v-btn>
+      </v-col>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        sm="6"
+        md="4"
+      >
+          Prénom/Nom/Postnom: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        {{client.nom}} {{client.postnom}} {{client.prenom}}
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+          Sexe: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        {{client.sexe}}
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+          Date de naissance: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        {{ client.date_naissance}}
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+          Localisation: 
+      </v-col>
+
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        {{client.localisation}}
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        Entreprise: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+      {{client.entreprise}}
         
-        <div>Localisation: {{client.localisation}}</div>
+      </v-col>
+    </v-row>
 
-        <div class="my-4 text-subtitle-1">
-          Entreprise: {{client.entreprise}} | Matricule: {{client.num_id}}
-        </div>
-      </v-row>
-    </v-card-text>
-
-    <v-divider class="mx-4"></v-divider>
-
-    <v-card-actions>
-      <v-btn
-        color="deep-purple lighten-2"
-        text
-        @click="showEdit"
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
       >
-        Editer
-      </v-btn>
-    </v-card-actions>
+        Matricule: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >{{client.num_id}}
+
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
@@ -60,9 +147,14 @@
       client:{},
       loading: false
     }),
+    components:{
+    },
     methods:{
-      showEdit:function(){
-
+      gotoUpload:function(){
+        this.$router.push({
+          name: 'upload',
+          params: {client: this.client}
+        })
       }
     },
     created:function(){
