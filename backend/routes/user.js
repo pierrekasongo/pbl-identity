@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 
 const User = require('../modules/User')
 const Utils = require('../modules/Utils')
-const conf = require('../config/conf.json')
+const conf = require('../config/conf')
 const auth = require('../middleware/auth')
 
 router.get('/', auth,(req,res)=>{
