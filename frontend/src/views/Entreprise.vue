@@ -155,7 +155,12 @@
     methods: {
       initialize(){
         console.log("Entreprise")
-        fetch("/entreprise/").then(resp => {
+        const options={
+          headers:{
+            'x-access-token': 'Bearer ' +localStorage.getItem("token")
+          }
+        }
+        fetch("/entreprise/", options).then(resp => {
           return resp.json()
         }).then(data =>{
           console.log(data)
@@ -180,6 +185,9 @@
         console.log("INDEX ",this.editedItem.id)
         const options = {
             method: "DELETE",
+            headers:{
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            }
           };
           fetch(`/entreprise/${this.editedItem.id}`, options).then(resp => {
               return resp.json()
@@ -212,7 +220,10 @@
         if (this.editedIndex > -1) {
           const options = {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+              "Content-Type": "application/json",
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            },
             body: JSON.stringify({id:this.editedItem.id, nom: this.editedItem.nom})
           };
           fetch(`/entreprise`, options).then(resp => {
@@ -228,7 +239,11 @@
           console.log("POST",this.editedItem.nom)
           const options = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            },
+            
             body: JSON.stringify({nom: this.editedItem.nom})
           };
           fetch(`/entreprise`, options).then(resp => {

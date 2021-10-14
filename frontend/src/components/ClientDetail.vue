@@ -160,7 +160,12 @@
     created:function(){
       let id = this.clientId
       this.loading = true
-       fetch(`/client/${id}`).then(resp => {
+      const options ={
+        headers:{
+          'x-access-token': 'Bearer ' +localStorage.getItem("token")
+        }
+      }
+      fetch(`/client/${id}`, options).then(resp => {
         return resp.json()
       }).then(data =>{
         console.log("CLIENT ",data)

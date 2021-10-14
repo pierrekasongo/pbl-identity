@@ -70,7 +70,6 @@ import axios from 'axios'
         e.preventDefault()
         let _login = this.username
         let _password = this.password
-        console.log(_login, _password)
         let data = {
           login:_login,
           password: _password
@@ -84,6 +83,7 @@ import axios from 'axios'
                 localStorage.setItem("login",user.login)
                 localStorage.setItem("nom",user.nom)
                 localStorage.setItem("role",user.role)
+                localStorage.setItem("token",user.token)
                 this.$router.push("/") 
               }).catch((err) => {    
                   console.log(err.message)    

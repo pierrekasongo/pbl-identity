@@ -46,7 +46,12 @@
     },
     created:function(){
       let id = this.clientId
-      fetch(`/visite/${id}`).then(resp => {
+      const options = {
+        headers:{
+          'x-access-token': 'Bearer ' +localStorage.getItem("token")
+        }
+      }
+      fetch(`/visite/${id}`, options).then(resp => {
           return resp.json()
         }).then(data =>{
           console.log(data)

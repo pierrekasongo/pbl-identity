@@ -48,7 +48,12 @@
     },
     created: function(){
       let id = this.parentId
-      fetch(`/famille/${id}`).then(resp => {
+      const options ={
+        headers:{
+          'x-access-token': 'Bearer ' +localStorage.getItem("token")
+        }
+      }
+      fetch(`/famille/${id}`, options).then(resp => {
         console.log("RESPONSE ",resp)
         return resp.json()
       }).then(data =>{

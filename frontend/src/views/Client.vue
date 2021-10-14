@@ -289,7 +289,13 @@
     },
     methods:{
       initialize(){
-        fetch("/client/").then(resp => {
+        const options={
+          headers:{
+            'x-access-token': 'Bearer ' +localStorage.getItem("token")
+          }
+        }
+        fetch("/client/",options
+          ).then(resp => {
           console.log("RESPONSE ",resp)
           return resp.json()
         }).then(data =>{
@@ -298,7 +304,13 @@
         }).catch(err => console.log(err))
       },
       loadEntreprise(){
-        fetch("/entreprise/").then(resp => {
+        const options={
+           headers:{
+            'x-access-token': 'Bearer ' +localStorage.getItem("token")
+          }
+        }
+        fetch("/entreprise/",options
+         ).then(resp => {
           console.log("ENTREPRISES")
           return resp.json()
         }).then(data =>{
@@ -331,8 +343,11 @@
       deleteItemConfirm () {
         this.data.splice(this.editedIndex, 1)
         console.log("INDEX ",this.editedItem.id)
-        const options = {
+          const options = {
             method: "DELETE",
+            headers:{
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            }
           };
           fetch(`/entreprise/${this.editedItem.id}`, options).then(resp => {
               return resp.json()
@@ -368,7 +383,11 @@
           
           const options = {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+               "Content-Type": "application/json",
+               'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            },
+             
             body: JSON.stringify({
               id:this.editedItem.id,
               prenom: this.editedItem.prenom,
@@ -393,7 +412,10 @@
           console.log("POSTING")
           const options = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            },
             body: JSON.stringify({
               prenom: this.editedItem.prenom,
               nom: this.editedItem.nom,

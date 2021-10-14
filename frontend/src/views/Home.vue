@@ -1,13 +1,12 @@
 <style scoped>
 .main{
-  margin:20px;
-  padding:20px;
+  margin:10px;
 }
 </style>
 
 <template>
   <div class="main">
-    <h2>Bienvenue {{username}}, {{role}}</h2>
+    <h2>Acceuil</h2>
   </div>
 </template>
 

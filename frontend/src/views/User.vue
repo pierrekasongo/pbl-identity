@@ -322,7 +322,12 @@
     },
     methods: {
       initialize(){
-        fetch("/user/").then(resp => {
+        const options = {
+          headers:{
+            'x-access-token': 'Bearer ' +localStorage.getItem("token")
+          }
+        }
+        fetch("/user/", options).then(resp => {
         return resp.json()
       }).then(data =>{
         console.log(data)
@@ -352,8 +357,9 @@
       deleteItemConfirm () {
         this.data.splice(this.editedIndex, 1)
         console.log("INDEX ",this.editedItem.id)
-        const options = {
+          const options = {
             method: "DELETE",
+            'x-access-token': 'Bearer ' +localStorage.getItem("token")
           };
           fetch(`/entreprise/${this.editedItem.id}`, options).then(resp => {
               return resp.json()
@@ -394,7 +400,10 @@
         if (this.editedIndex > -1) {
           const options = {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            },
             body: JSON.stringify({
                       id:this.editedItem.id, 
                       nom: this.editedItem.nom,
@@ -416,7 +425,10 @@
           console.log("POST",this.editedItem.nom)
           const options = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            },
             body: JSON.stringify({nom: this.editedItem.nom})
           };
           fetch(`/user`, options).then(resp => {

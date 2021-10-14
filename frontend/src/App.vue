@@ -20,7 +20,8 @@ import Header from './components/layout/Header.vue'
       loggedin: false
     }),
     created:function(){
-      this.loggedin = localStorage.getItem("user_id") > 0 || false
+      if(localStorage.getItem("token"))
+        this.loggedin = localStorage.getItem("token").length > 0
       console.log("LOGGEDIN ",this.loggedin)
       if(!this.loggedin)
         this.$router.push("/login")
