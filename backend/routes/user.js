@@ -8,6 +8,7 @@ const Utils = require('../modules/Utils')
 const conf = require('../config/conf')
 const auth = require('../middleware/auth')
 
+
 router.get('/', auth,(req,res)=>{
 
   console.log("Get all Users")
@@ -15,6 +16,12 @@ router.get('/', auth,(req,res)=>{
         console.log(data.rows)
         res.status(200).json(data.rows)
     })
+})
+
+router.get('/role',(req,res)=>{
+    console.log("Get roles")
+    console.log(conf.ROLE)
+    res.status(200).json({data:conf.ROLE})
 })
 
 router.post('/',auth, (req,res)=>{

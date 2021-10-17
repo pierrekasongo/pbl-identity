@@ -8,7 +8,7 @@ const visite = {
         return new Promise(async (resolve, reject)=>{
             try{
                 const pool = db.connect()
-                const req = `(SELECT TO_CHAR(v.date_visite, 'dd-mm-yyyy') AS date_visite,
+                const req = `(SELECT v.id AS id, TO_CHAR(v.date_visite, 'dd-mm-yyyy') AS date_visite,
                                 v.motif AS motif, u.nom AS utilisateur,
                                 CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                                 FROM visite v, utilisateur u, client c 
@@ -26,7 +26,7 @@ const visite = {
         return new Promise(async (resolve, reject)=>{
             try{
                 const pool = db.connect()
-                const req = `(SELECT TO_CHAR(v.date_visite, 'dd-mm-yyyy') AS date_visite,
+                const req = `(SELECT v.id AS id,TO_CHAR(v.date_visite, 'dd-mm-yyyy') AS date_visite,
                                 v.motif AS motif, u.nom AS utilisateur,
                                 CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                                 FROM visite v, utilisateur u, client c 
@@ -36,7 +36,7 @@ const visite = {
                                 
                                 UNION 
                                 
-                                (SELECT TO_CHAR(v.date_visite, 'dd-mm-yyyy') AS date_visite,
+                                (SELECT v.id AS id, TO_CHAR(v.date_visite, 'dd-mm-yyyy') AS date_visite,
                                 v.motif AS motif, u.nom AS utilisateur,
                                 CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                                 FROM visite v, utilisateur u, client c 
@@ -78,12 +78,14 @@ const visite = {
             
         })
     },
-    create:(date,motif,user) =>{
+    create:(date,motif,user,patient) =>{
+        console.log("Creating...")
         return new Promise(async (resolve, reject)=>{
             try{
                 const pool = db.connect()
-                const req = `INSERT INTO visite(date_visite,motif,utilisateur) VALUES($1,$2,$3)`
-                const res =  await pool.query(req,[date,motif,user])
+                const req = `INSERT INTO visite(date_visite,motif,utilisateur,client) 
+                                VALUES($1,$2,$3,$4)  RETURNING id`
+                const res =  await pool.query(req,[date,motif,user,patient])
                 resolve(res)
             }catch(err){
                 console.log(err.message)
@@ -96,7 +98,7 @@ const visite = {
             try{
                 const pool = db.connect()
                 const req = `DELETE FROM visite WHERE id=$1`
-                const res =  await pool.query(text,[id])
+                const res =  await pool.query(req,[id])
                 resolve(res)
             }catch(err){
                 console.log(err.message)

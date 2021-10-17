@@ -4,21 +4,22 @@ const multer = require('multer')
 const fs = require('fs')
 const upload = multer({dest:'public/uploads/'})
 //const { client } = require('../modules/Client')
-const client = express.Router()
+const router = express.Router()
 const Client = require('../modules/Client')
 const path = require('path')
 const Utils = require('../modules/Utils')
 const auth = require('../middleware/auth')
+const conf = require('../config/conf')
+const { config } = require('process')
 
-
-client.get('/', auth, (req,res)=>{
+router.get('/', auth, (req,res)=>{
     console.log("Get all Clients")
     Client.findParents().then(data =>{
         res.status(200).json(data.rows)
     })
 })
 
-client.get('/:id',auth, (req,res)=>{
+router.get('/:id',auth, (req,res)=>{
     console.log("Find by Id")
     let clientId = req.params.id
     
@@ -28,7 +29,7 @@ client.get('/:id',auth, (req,res)=>{
     })
 })
 
-client.post('/upload',upload.single("file"), (req,res)=>{
+router.post('/upload',upload.single("file"), (req,res, next)=>{
     console.log("Uploading photo")
     let _filename = Utils.hash(req.body.client).substring(0,20)+path.extname(req.file.originalname)
     
@@ -42,7 +43,12 @@ client.post('/upload',upload.single("file"), (req,res)=>{
     })
 })
 
-client.post('/',auth, (req,res)=>{
+router.get('/relation', (req,res)=>{
+    console.log("Get relations")
+    res.status(200).json({data:conf.RELATION})
+})
+
+router.post('/',auth, (req,res)=>{
 
     let prenom = req.body.prenom
     let nom = req.body.nom
@@ -61,7 +67,7 @@ client.post('/',auth, (req,res)=>{
         })
 })
 
-client.put('/',auth, (req,res)=>{
+router.put('/',auth, (req,res)=>{
     console.log("/PUT client")
     let id = req.body.id
     let prenom = req.body.prenom
@@ -80,4 +86,4 @@ client.put('/',auth, (req,res)=>{
         })
 })
 
-module.exports = client
+module.exports = router

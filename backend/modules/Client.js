@@ -57,6 +57,25 @@ const client = {
             }
         })
     },
+    findWithInclude:(parent) =>{
+        return new Promise(async (resolve, reject)=>{
+            try{
+                const pool = db.connect()
+                req = `SELECT id, prenom, nom, 
+                        postnom,sexe,TO_CHAR(date_naissance, 'dd-mm-yyyy') AS date_naissance,photo,localisation,relation
+                        FROM client WHERE parent = $1 
+                        UNION 
+                        SELECT id, prenom, nom, 
+                        postnom,sexe,TO_CHAR(date_naissance, 'dd-mm-yyyy') AS date_naissance,photo,localisation,relation
+                        FROM client WHERE id = $1`
+                const res =   await pool.query(req,[parent])
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
+        })
+    },
     findParents:() =>{
         return new Promise(async (resolve, reject)=>{
             try{

@@ -16,7 +16,7 @@ const verifyToken = (req, res, next) => {
     req.user = decoded;
   } catch (err) {
     console.log("Ticket error ", err.message)
-    return res.status(401).send("Ticket invalide");
+    return res.status(401).json({"error":"Ticket invalide"});
   }
   return next();
 };

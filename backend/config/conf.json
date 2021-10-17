@@ -5,5 +5,7 @@
     "DB_HOST":"localhost",
     "DB_PORT":5432,
     "SALT":"abc123XYZ",
-    "TOKEN_KEY":"abceqklho$qoe"
+    "TOKEN_KEY":"abceqklho$qoe",
+    "RELATION":["Epoux","Epouse", "Enfant"],
+    "ROLE":["Admin","Infirmier"]
 }

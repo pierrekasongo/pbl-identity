@@ -1,10 +1,10 @@
 const express = require('express')
 const winston = require('winston')
-const visite = express.Router()
+const router = express.Router()
 const Visite = require('../modules/Visite')
 const auth = require('../middleware/auth')
 
-visite.get('/:id', auth,(req,res)=>{
+router.get('/:id', auth,(req,res)=>{
     
     let clientId = req.params.id
     if(clientId > 0){
@@ -22,17 +22,22 @@ visite.get('/:id', auth,(req,res)=>{
     }
     
 })
-
-visite.post('/',auth, (req,res)=>{
+router.post('/',auth, (req,res)=>{
     console.log("Post New Visite")
-    let date_visite = req.body.date_visite
-    let motif = req.body.motif
-    let utilisateur = req.body.utilisateur
-    let client = req.body.client
-
-    Visite.create(date_visite,motif,utilisateur,client).then(outcome =>{
-            res.status(200).json(outcome.rows)
-        })
+    let {date_visite, motif, utilisateur, patient} = req.body
+ 
+    Visite.create(date_visite,motif,utilisateur,patient).then(outcome =>{
+        console.log("Result ", outcome)
+        res.status(200).json({count: outcome.rowCount})
+    })
+})
+router.delete('/:id',auth,(req,res)=>{
+    console.log("DELETE visite")
+    let id = req.params.id
+    Visite.delete(id).then(outcome =>{
+        console.log(outcome.rowCount)
+        res.status(200).json({count:outcome.rowCount})
+    })
 })
 
-module.exports = visite
+module.exports = router
