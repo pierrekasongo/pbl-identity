@@ -161,11 +161,17 @@
           }
         }
         fetch("/entreprise/", options).then(resp => {
-          return resp.json()
+          if(resp.status == 401){
+            this.$router.push('/login')
+          }else
+            return resp.json()
         }).then(data =>{
           console.log(data)
           this.data = data
-        }).catch(err => console.log(err))
+        }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
       },
       editItem (item) {
         this.editedIndex = this.data.indexOf(item)
@@ -196,7 +202,10 @@
             if(data.count > 0){
               this.initialize()
             }
-          }).catch(err => console.log(err))
+          }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
         this.closeDelete()
       },
 
@@ -234,7 +243,10 @@
               this.initialize()
               //Object.assign(this.data[this.editedIndex], this.editedItem)
             }
-          }).catch(err => console.log(err))
+          }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
         } else {
           console.log("POST",this.editedItem.nom)
           const options = {
@@ -255,7 +267,10 @@
               //this.data.push(this.editedItem)
             }
               
-          }).catch(err => console.log(err))
+          }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
           
         }
         this.close()

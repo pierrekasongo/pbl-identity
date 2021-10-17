@@ -21,6 +21,9 @@
     created:function(){
       this.username = localStorage.getItem("nom")
       this.role = localStorage.getItem("role")
+      if(!localStorage.getItem("user_id")){
+        this.$router.push("/login")
+      }
     }
   }
 </script>

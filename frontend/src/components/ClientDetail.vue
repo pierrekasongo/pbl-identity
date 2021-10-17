@@ -166,12 +166,18 @@
         }
       }
       fetch(`/client/${id}`, options).then(resp => {
-        return resp.json()
+        if(resp.status == 401){
+            this.$router.push('/login')
+        }else
+          return resp.json()
       }).then(data =>{
         console.log("CLIENT ",data)
         this.client = data
         this.loading = false
-      }).catch(err => console.log(err))
+      }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+      })
     },
 
   }

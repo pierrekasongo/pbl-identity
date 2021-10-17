@@ -14,6 +14,10 @@ module.exports = {
         target: 'http://localhost:3000/',
         logLevel: 'debug'
       },
+      '^/relation': {
+        target: 'http://localhost:3000/',
+        logLevel: 'debug'
+      },
       '^/user': {
         target: 'http://localhost:3000/',
         logLevel: 'debug'

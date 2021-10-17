@@ -18,9 +18,8 @@
       group-by="entreprise"
       class="elevation-1"
       show-group-by
-      
     >
-      <template v-slot:top>
+    <template v-slot:top>
       <v-toolbar
         flat
       >
@@ -297,11 +296,17 @@
         fetch("/client/",options
           ).then(resp => {
           console.log("RESPONSE ",resp)
-          return resp.json()
+          if(resp.status == 401){
+            this.$router.push('/login')
+          }else
+            return resp.json()
         }).then(data =>{
           console.log(data)
           this.data = data
-        }).catch(err => console.log(err))
+        }).catch(err => {
+          console.log(err)
+          this.$router.push('/login')
+        })
       },
       loadEntreprise(){
         const options={
@@ -312,20 +317,22 @@
         fetch("/entreprise/",options
          ).then(resp => {
           console.log("ENTREPRISES")
-          return resp.json()
+          if(resp.status == 401){
+            this.$router.push('/login')
+          }else
+            return resp.json()
         }).then(data =>{
           console.log("Entreprises ",data)
-          /*data.forEach(d => {
-            this.entreprise.push({value: d.id, text:d.nom})
-          });*/
           this.entreprise = data
-        }).catch(err => console.log(err))
+        }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
       },
       handleRowClick:function(row){
         console.log(row.id, row.nom)
         this.$router.push({ name:"client-detail", params: {id: row.id} })
       },
-
       editItem (item) {
         this.loadEntreprise()
         this.editedIndex = this.data.indexOf(item)
@@ -333,13 +340,11 @@
         console.log(item)
         this.dialog = true
       },
-
       deleteItem (item) {
         this.editedIndex = this.data.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
-
       deleteItemConfirm () {
         this.data.splice(this.editedIndex, 1)
         console.log("INDEX ",this.editedItem.id)
@@ -349,14 +354,20 @@
               'x-access-token': 'Bearer ' +localStorage.getItem("token")
             }
           };
-          fetch(`/entreprise/${this.editedItem.id}`, options).then(resp => {
+          fetch(`/client/${this.editedItem.id}`, options).then(resp => {
+            if(resp.status == 401){
+            this.$router.push('/login')
+          }else
               return resp.json()
-            }).then(data =>{
+          }).then(data =>{
             console.log("ID ",data.count)
             if(data.count > 0){
               this.initialize()
             }
-          }).catch(err => console.log(err))
+          }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
         this.closeDelete()
       },
 
@@ -401,13 +412,19 @@
             })
           };
           fetch(`/client/`, options).then(resp => {
+            if(resp.status == 401){
+              this.$router.push('/login')
+            }else
               return resp.json()
             }).then(data =>{
             console.log("ID ",data.count)
             if(data.count > 0){
               this.initialize()
             }
-          }).catch(err => console.log(err))
+          }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
         } else {
           console.log("POSTING")
           const options = {
@@ -423,11 +440,14 @@
               sexe: this.editedItem.sexe,
               date_naissance:this.editedItem.date_naissance,
               localisation: this.editedItem.localisation,
-              entrprise: this.editedItem.entreprise,
+              entreprise: this.editedItem.entreprise,
               matricule: this.editedItem.matricule,
             })
           };
           fetch(`/client/`, options).then(resp => {
+            if(resp.status == 401){
+              this.$router.push('/login')
+            }else
               return resp.json()
             }).then(data =>{
             console.log("ID ",data.id)
@@ -436,7 +456,10 @@
               //this.data.push(this.editedItem)
             }
               
-          }).catch(err => console.log(err))
+          }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
           
         }
         this.close()

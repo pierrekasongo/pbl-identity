@@ -56,6 +56,7 @@ import axios from 'axios'
       }
     },
     created:function(){
+      this.$store.commit('logout')
     },
     methods: {
       validate () {
@@ -84,7 +85,9 @@ import axios from 'axios'
                 localStorage.setItem("nom",user.nom)
                 localStorage.setItem("role",user.role)
                 localStorage.setItem("token",user.token)
-                this.$router.push("/") 
+                user.loggedin = true
+                //this.$store.commit('login', {user})
+                this.$router.push("/client") 
               }).catch((err) => {    
                   console.log(err.message)    
               })  

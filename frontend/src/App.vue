@@ -4,6 +4,8 @@
 
     <Header v-if="loggedin"/>
 
+    <ModalIdle v-if="isIdle" />
+
     <v-main>
       <!--  -->
       <router-view></router-view>
@@ -14,17 +16,28 @@
 <script>
 import Navigation from './components/layout/Navigation.vue'
 import Header from './components/layout/Header.vue'
+import ModalIdle from './components/ModalIdle.vue'
+
   export default {
-  components: { Navigation,Header },
+  components: { 
+    Navigation,
+    Header,
+    ModalIdle
+  },
     data: () => ({ 
       loggedin: false
     }),
     created:function(){
       if(localStorage.getItem("token"))
-        this.loggedin = localStorage.getItem("token").length > 0
+        this.loggedin = localStorage.getItem("user_id").length > 0
       console.log("LOGGEDIN ",this.loggedin)
       if(!this.loggedin)
         this.$router.push("/login")
+    },
+    computed: {
+      isIdle() {
+        return this.$store.state.idleVue.isIdle;
+      }
     }
   }
 </script>

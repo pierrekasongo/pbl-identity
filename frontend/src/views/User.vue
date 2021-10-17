@@ -212,7 +212,6 @@
               <v-btn
                 color="blue darken-1"
                 text
-                @click="savePassword"
               >
                 Valider
               </v-btn>
@@ -280,6 +279,7 @@
         dialog: false,
         passwordDialog: false,
         dialogDelete: false,
+        password:'',
         headers: [
           { text: 'ID', value: 'id', align: 'right' },
           { text: 'Login', value: 'login', align: 'right' },
@@ -302,7 +302,6 @@
           nom: '',
         },
       }
-        
     },
     computed: {
       formTitle () {
@@ -328,12 +327,19 @@
           }
         }
         fetch("/user/", options).then(resp => {
-        return resp.json()
-      }).then(data =>{
-        console.log(data)
-        this.data = data
-      }).catch(err => console.log(err))
+          if(resp.status == 401){
+            this.$router.push('/login')
+          }else
+            return resp.json()
+        }).then(data =>{
+          console.log(data)
+          this.data = data
+        }).catch(err => {
+          console.log(err)
+          this.$route.push('/login')
+        })
       },
+      
       editItem (item) {
         this.editedIndex = this.data.indexOf(item)
         this.editedItem = Object.assign({}, item)
@@ -359,7 +365,9 @@
         console.log("INDEX ",this.editedItem.id)
           const options = {
             method: "DELETE",
-            'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            headers:{
+              'x-access-token': 'Bearer ' +localStorage.getItem("token")
+            } 
           };
           fetch(`/entreprise/${this.editedItem.id}`, options).then(resp => {
               return resp.json()
@@ -368,7 +376,10 @@
             if(data.count > 0){
               this.initialize()
             }
-          }).catch(err => console.log(err))
+          }).catch(err => {
+            console.log(err)
+            this.$route.push('/login')
+          })
         this.closeDelete()
       },
 
@@ -420,7 +431,10 @@
               this.initialize()
               //Object.assign(this.data[this.editedIndex], this.editedItem)
             }
-          }).catch(err => console.log(err))
+          }).catch(err => {
+            console.log(err)
+            this.$route.push('/login')
+          })
         } else {
           console.log("POST",this.editedItem.nom)
           const options = {
@@ -440,7 +454,10 @@
               //this.data.push(this.editedItem)
             }
               
-          }).catch(err => console.log(err))
+          }).catch(err => {
+            console.log(err)
+            this.$route.push('/login')
+          })
           
         }
         this.close()

@@ -43,12 +43,13 @@ export default {
     data: () => ({ 
       drawer: null,
       items: [
-          { title: 'Acceuil', icon: 'mdi-view-home', to:'/'},
+          /*{ title: 'Acceuil', icon: 'mdi-view-home', to:'/'},*/
           { title: 'Abonnés', icon: 'mdi-view-dashboard', to:'/client'},
           { title: 'Visites', icon: 'mdi-image', to:'/visite-page'},
           { title: 'Entreprises', icon: 'mdi-view-dashboard', to:'/entreprise'},
           { title: 'Changer mot de passe', icon: 'mdi-help-box', to:'/compte'},
           { title: 'Utilisateurs', icon: 'mdi-help-box', to:'/user'},
+          { title: 'Déconnexion', icon: 'mdi-help-box', to:'/login'},
         ],
         right: null,
       }),
