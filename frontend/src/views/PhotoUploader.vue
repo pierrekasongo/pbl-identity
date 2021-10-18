@@ -106,8 +106,32 @@
     },
     created:function(){
       console.log("Params ", this.$route.params.client)
-      this.client = this.$route.params.client
-      this.previewImage = this.$route.params.client.photo
+      const clientId = this.$route.params.client
+
+      const options={
+          headers:{
+            'x-access-token': 'Bearer ' +localStorage.getItem("token")
+          }
+      }
+      fetch(`/client/${clientId}`,options).then(resp => {
+          console.log("RESPONSE ",resp)
+          if(resp.status == 401){
+            this.$router.push('/login')
+          }else
+            return resp.json()
+        }).then(data =>{
+          console.log(data)
+          this.previewImage = data.photo
+          this.client = {
+            prenom:data.prenom,
+            nom:data.nom,
+            postnom:data.postnom,
+            photo: data.photo
+          }
+        }).catch(err => {
+          console.log(err)
+          this.$router.push('/login')
+        })
     }
   }
   

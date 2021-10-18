@@ -162,7 +162,7 @@ import axios from 'axios'
         dialogDelete: false,
         search: '',
         headers: [
-          { text: 'ID', value: 'id', align: 'right',groupable: false},
+          { text: 'ID', value:'id', align: 'right'},
           { text: 'Date visite', value: 'date_visite', align: 'right'},
           { text: 'Patient', value: 'client', align: 'right' ,groupable: false},
           { text: 'Motif', value: 'motif', align: 'right',groupable: false },

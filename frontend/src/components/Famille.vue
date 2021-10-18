@@ -17,6 +17,7 @@
       loading-text="En cours de chargement..."
       class="elevation-1"
     >
+    
     <template v-slot:top>
       <v-toolbar
         flat
@@ -128,7 +129,7 @@
                   >
                     <v-select
                       label="Relation"
-                      v-model="editedItem.relations"
+                      v-model="editedItem.relation"
                       :items="relations"
                       item-text="name"
                       item-value="id"
@@ -136,6 +137,19 @@
                     ></v-select>
                   </v-col>
                 </v-row>
+                 <v-row>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.localisation"
+                      label="Localisation"
+                    ></v-text-field>
+                  </v-col>
+                 </v-row>
+                 
               </v-container>
             </v-card-text>
 
@@ -173,7 +187,17 @@
 
       </v-toolbar>
     </template>
+    <template v-slot:[`item.photo`]="{item}">
+      <div class="p-2">
+        <v-img :src="`/uploads/${item.photo}`"  height="100px" width="100px"></v-img>
+      </div>
+    </template>
     <template v-slot:[`item.actions`]="{item}">
+      <v-icon small
+        class="mr-2"
+        @click="gotoUpload(item)">
+        mdi-camera
+      </v-icon>
       <v-icon
         small
         class="mr-2"
@@ -219,6 +243,8 @@
           { text: 'Sexe', value: 'sexe', align: 'right'},
           { text: 'Date naissance', value: 'date_naissance', align: 'right'},
           { text: 'Relation', value: 'relation', align: 'right'},
+          { text: 'Localisation', value: 'localisation', align: 'right'},
+          { text: "Photo", value: "photo", sortable: false },
           { text: 'Actions', value: 'actions', sortable: false },
         ],
         data:[],
@@ -233,6 +259,13 @@
       }
     },
     methods:{
+      gotoUpload:function(item){
+        console.log("CLIENT ID", item.id)
+        this.$router.push({
+          name: 'upload',
+          params: {client: item.id}
+        })
+      },
       loadRelation(){
         const options = {
           headers:{
@@ -240,10 +273,11 @@
           }
         }
         fetch(`/relation/`, options).then(resp => {
-           if(resp.status == 401){
+          console.log("Feching relations")
+          if(resp.status == 401){
             this.$router.push('/login')
           }else
-            return resp
+            return resp.json()
         }).then(d =>{
           console.log("Relations ", d)
           this.relations = d.data
@@ -294,7 +328,10 @@
             }
           };
           fetch(`/client/${this.editedItem.id}`, options).then(resp => {
-              return resp.json()
+              if(resp.status == 401){
+                this.$router.push('/login')
+              }else
+                return resp.json()
             }).then(data =>{
             console.log("ID ",data.count)
             if(data.count > 0){
@@ -324,16 +361,13 @@
 
       save () {
         if (this.editedIndex > -1) {
-
-          console.log("EDITING", this.editedItem.entreprise_id)
-          
+          console.log("EDITING ", this.editedItem.id)
           const options = {
             method: "PUT",
             headers: {
                "Content-Type": "application/json",
                'x-access-token': 'Bearer ' +localStorage.getItem("token")
             },
-             
             body: JSON.stringify({
               id:this.editedItem.id,
               prenom: this.editedItem.prenom,
@@ -341,10 +375,14 @@
               postnom: this.editedItem.postnom,
               sexe: this.editedItem.sexe,
               date_naissance:this.editedItem.date_naissance,
+              relation: this.editedItem.relation,
               localisation: this.editedItem.localisation,
             })
           };
           fetch(`/client/`, options).then(resp => {
+            if(resp.status == 401){
+              this.$router.push('/login')
+            }else
               return resp.json()
             }).then(data =>{
             console.log("ID ",data.count)
@@ -368,16 +406,20 @@
               postnom: this.editedItem.postnom,
               sexe: this.editedItem.sexe,
               date_naissance:this.editedItem.date_naissance,
+              relation: this.editedItem.relation,
               localisation: this.editedItem.localisation,
+              parent: this.parentId
             })
           };
           fetch(`/client/`, options).then(resp => {
+            if(resp.status == 401){
+              this.$router.push('/login')
+            }else
               return resp.json()
             }).then(data =>{
-            console.log("ID ",data.id)
-            if(data.id > 0){
+            console.log("ID ",data.count)
+            if(data.count > 0){
               this.initialize()
-              //this.data.push(this.editedItem)
             }
               
           }).catch(err => {

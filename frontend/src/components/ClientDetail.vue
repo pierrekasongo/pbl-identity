@@ -153,7 +153,7 @@
       gotoUpload:function(){
         this.$router.push({
           name: 'upload',
-          params: {client: this.client}
+          params: {client: this.client.id}
         })
       }
     },
