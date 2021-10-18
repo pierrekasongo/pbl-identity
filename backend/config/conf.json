@@ -6,6 +6,6 @@
     "DB_PORT":5432,
     "SALT":"abc123XYZ",
     "TOKEN_KEY":"abceqklho$qoe",
-    "RELATION":["Epoux","Epouse", "Enfant"],
+    "RELATION":["Agent","Epoux","Epouse", "Enfant"],
     "ROLE":["Admin","Infirmier"]
 }

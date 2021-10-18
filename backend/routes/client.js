@@ -57,14 +57,14 @@ router.post('/',auth, (req,res)=>{
     let date_naissance = req.body.date_naissance
     let localisation = req.body.localisation
     let photo = ""
-    let num_id = req.body.matricule
-    let entreprise = req.body.entreprise
-    let parent = 0
-    let relation = "Agent"
-    Client.createParent(prenom,nom,postnom,sexe,date_naissance,photo,
+    let num_id = req.body.matricule || null
+    let entreprise = req.body.entreprise || null
+    let parent = req.body.parent || 0
+    let relation = req.body.relation || "Agent"
+    Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
         localisation,num_id,entreprise,parent,relation).then(outcome =>{
             res.status(200).json({count: outcome.rowCount})
-        })
+    })
 })
 
 router.put('/',auth, (req,res)=>{
@@ -76,14 +76,23 @@ router.put('/',auth, (req,res)=>{
     let sexe = req.body.sexe
     let date_naissance = req.body.date_naissance
     let localisation = req.body.localisation
-    let num_id = req.body.matricule
-    let entreprise = req.body.entreprise
+    let num_id = req.body.matricule || null
+    let entreprise = req.body.entreprise || null
 
-    Client.updateParent(id,prenom,nom,postnom,sexe,date_naissance,
+    Client.update(id,prenom,nom,postnom,sexe,date_naissance,
                             localisation,num_id,entreprise)
                             .then(outcome =>{
             res.status(200).json({count: outcome.rowCount})
         })
+})
+
+router.delete('/:id',auth,(req,res)=>{
+    console.log("DELETE client")
+    let id = req.params.id
+    Client.delete(id).then(outcome =>{
+        console.log(outcome.rowCount)
+        res.status(200).json({count:outcome.rowCount})
+    })
 })
 
 module.exports = router

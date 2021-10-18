@@ -102,7 +102,7 @@ const client = {
             resolve(res)
         })
     },
-    createParent:(prenom,nom,postnom,sexe,date_naissance,photo,localisation,
+    create:(prenom,nom,postnom,sexe,date_naissance,photo,localisation,
         num_id, entreprise,parent,relation) =>{
         return new Promise(async (resolve, reject)=>{
             try{
@@ -138,39 +138,35 @@ const client = {
     },
     delete:(id) =>{
         return new Promise(async (resolve, reject)=>{
-            const pool = db.connect()
-            const req = `DELETE FROM client WHERE id=$1`
-            const res =  await pool.query(req,[id])
-            resolve(res)
-        })
-    },
-    updateParent:(id,prenom,nom,postnom,sexe,date_naissance,localisation,
-        num_id, entreprise) =>{
-        return new Promise(async (resolve, reject)=>{
             try{
-
+                const pool = db.connect()
+                const req = `DELETE FROM client WHERE id=$1`
+                const res =  await pool.query(req,[id])
+                resolve(res)
             }catch(err){
                 console.log(err.message)
                 reject()
             }
-            const pool = db.connect()
-            const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,date_naissance=$6,
-            localisation=$7,num_id=$8,entreprise=$9 WHERE id = $1`
-            const res =  await pool.query(req,[id,prenom,nom,postnom,sexe,date_naissance,localisation,
-                num_id, entreprise])
-            resolve(res)
+            
         })
     },
-    updateChild:(id,prenom,nom,postnom,sexe,date_naissance,photo,relation) =>{
+    update:(id,prenom,nom,postnom,sexe,date_naissance,localisation,
+        num_id, entreprise) =>{
         return new Promise(async (resolve, reject)=>{
-            const pool = db.connect()
-            const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,
-                date_naissance=$6,photo=$7,relation=$8 WHERE id = $1`
-            const res =  await pool.query(req,[id,prenom,nom,postnom,sexe,date_naissance,photo,relation])
-            resolve(res)
+            try{
+                const pool = db.connect()
+                const req = `UPDATE client SET prenom = $2,nom=$3, postnom=$4,sexe=$5,date_naissance=$6,
+                localisation=$7,num_id=$8,entreprise=$9 WHERE id = $1`
+                const res =  await pool.query(req,[id,prenom,nom,postnom,sexe,date_naissance,localisation,
+                    num_id, entreprise])
+                resolve(res)
+            }catch(err){
+                console.log(err.message)
+                reject()
+            }
+            
         })
     },
-
     uploadPhoto:(id,photo) =>{
         return new Promise(async (resolve, reject)=>{
             try{
