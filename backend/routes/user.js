@@ -69,6 +69,50 @@ router.post('/auth',(req,res)=>{
     })
 })
 
+router.delete('/:id',auth,(req,res)=>{
+    console.log("DELETE user")
+    let id = req.params.id
+    User.delete(id).then(outcome =>{
+        console.log(outcome.rowCount)
+        res.status(200).json({count:outcome.rowCount})
+    })
+})
+
+router.put('/', auth,(req,res)=>{
+    console.log("Edit user")
+    let id = req.body.id
+    let login = req.body.login
+    let nom = req.body.nom || ''
+    let role = req.body.role || ''
+    let password = req.body.password || ''
+    let status = req.body.status || ''
+
+    if(password !== ''){
+        //Updating the password
+        console.log("Updating password")
+        let _password = Utils.hash(password, login)
+        User.updatePassword(id,_password).then(outcome =>{
+            console.log("RESULT ",outcome.rowCount)
+            res.status(200).json({count:outcome.rowCount})
+        })
+    }else if(status !==  ''){
+        //Updating name or role
+        console.log("Updating status")
+        User.updateStatus(id,status).then(outcome =>{
+            console.log("RESULT ",outcome.rowCount)
+            res.status(200).json({count:outcome.rowCount})
+        })
+    }else{
+        //Updating name or role
+        console.log("Updating nom and/or role")
+        User.update(id,nom,role).then(outcome =>{
+            console.log("RESULT ",outcome.rowCount)
+            res.status(200).json({count:outcome.rowCount})
+        })
+    }
+    
+})
+
 router.get("/logout", function(req, res) {
     
 });

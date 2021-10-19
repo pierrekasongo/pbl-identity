@@ -7,5 +7,5 @@
     "SALT":"abc123XYZ",
     "TOKEN_KEY":"abceqklho$qoe",
     "RELATION":["Agent","Epoux","Epouse", "Enfant"],
-    "ROLE":["Admin","Infirmier"]
+    "ROLE":["Admin","Encodeur"]
 }
