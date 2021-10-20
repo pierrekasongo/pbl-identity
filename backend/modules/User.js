@@ -47,12 +47,12 @@ const user = {
             
         })
     },
-    create:(login,nom,password,role) =>{
+    create:(login,nom,role) =>{
         return new Promise(async (resolve, reject)=>{
             try{
                 const pool = db.connect()
-                const req = `INSERT INTO utilisateur(login,nom,password,role,status) VALUES($1,$2,$3,$4,$5)`
-                const res =  await pool.query(req,[login,nom,password,role,'Actif'])
+                const req = `INSERT INTO utilisateur(login,nom,role,status) VALUES($1,$2,$3,$4)`
+                const res =  await pool.query(req,[login,nom,role,'Actif'])
                 resolve(res)
             }catch(err){
                 console.log(err.message)
@@ -78,14 +78,13 @@ const user = {
         return new Promise(async (resolve, reject)=>{
             try{
                 const pool = db.connect()
-                const req = `UPDATE utilisateur SET nom = $2 role = $3, WHERE id = $1`
+                const req = `UPDATE utilisateur SET nom = $2, role = $3 WHERE id = $1`
                 const res =  await pool.query(req,[id,nom,role])
                 resolve(res)
             }catch(err){
                 console.log(err.message)
                 reject()
-            }
-            
+            } 
         })
     },
     updateStatus:(id,status) =>{
