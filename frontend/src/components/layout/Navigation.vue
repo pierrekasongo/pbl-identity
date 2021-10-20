@@ -27,11 +27,14 @@
           :to="item.to"
           link
         >
-          <v-list-item-icon >
+          <v-list-item-icon 
+          >
             <v-icon >{{ item.icon }}</v-icon>
           </v-list-item-icon>
 
-          <v-list-item-content class="white--text font-weight-bold">
+          <v-list-item-content 
+            class="white--text font-weight-bold"
+          >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -42,16 +45,22 @@
 export default {
     data: () => ({ 
       drawer: null,
+      role:'',
       items: [
           /*{ title: 'Acceuil', icon: 'mdi-view-home', to:'/'},*/
-          { title: 'Abonnés', icon: 'mdi-view-dashboard', to:'/client'},
-          { title: 'Visites', icon: 'mdi-image', to:'/visite-page'},
-          { title: 'Entreprises', icon: 'mdi-view-dashboard', to:'/entreprise'},
-          { title: 'Changer mot de passe', icon: 'mdi-help-box', to:'/compte'},
-          { title: 'Utilisateurs', icon: 'mdi-help-box', to:'/user'},
-          { title: 'Déconnexion', icon: 'mdi-help-box', to:'/login'},
+          { title: 'Abonnés', icon: 'mdi-account-group-outline', to:'/client',role:'*'},
+          { title: 'Visites', icon: 'mdi-hospital', to:'/visite-page',role:'*'},
+          { title: 'Entreprises', icon: 'mdi-domain', to:'/entreprise',role:'Admin'},
+          { title: 'Changer mot de passe', icon: 'mdi-key', to:'/compte',role:'*'},
+          { title: 'Utilisateurs', icon: 'mdi-account-cog', to:'/user',role:'Admin'},
+          { title: 'Sauvegarde', icon: 'mdi-backup-restore', to:'/sauvegarde',role:'*'},
+          { title: 'Déconnexion', icon: 'mdi-logout', to:'/login',role:'*'},
         ],
         right: null,
       }),
+      created:function(){
+        const role = localStorage.getItem("role")
+        this.items = this.items.filter(v => v.role == role  ||  v.role == '*')
+      }
 }
 </script>

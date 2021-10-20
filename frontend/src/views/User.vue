@@ -44,6 +44,7 @@
               Ajouter
             </v-btn>
           </template>
+
           <v-card>
             <v-card-title>
               <span class="text-h5">{{ formTitle }}</span>
@@ -59,7 +60,7 @@
                   >
                     <v-text-field
                       v-model="editedItem.login"
-                      :rules="[rules.required]"
+                      :rules="[required]"
                       label="Login"
                       :disabled="!(editedIndex < 0)"
                     ></v-text-field>
@@ -72,7 +73,7 @@
                   >
                     <v-text-field
                       v-model="editedItem.nom"
-                      :rules="[rules.required]"
+                       :rules="[required]"
                       label="Nom"
                     ></v-text-field>
                   </v-col>
@@ -88,6 +89,7 @@
                       label="Rôle"
                       v-model="editedItem.role"
                       :items="roles"
+                       :rules="[required]"
                       item-text="name"
                       item-value="id"
                       return-object
@@ -178,16 +180,16 @@
                       @click:append="show2 = !show2"
                     >
                       <template v-slot:append>
-                      <v-icon
-                        v-if="successPass1"
-                        color="green"
-                        >{{ passRule1 }}</v-icon
-                      >
-                      <v-icon
-                        v-if="!successPass1"
-                        color="red"
-                        >{{ passRule1 }}</v-icon
-                      >
+                        <v-icon
+                          v-if="successPass1"
+                          color="green"
+                          >{{ passRule1 }}</v-icon
+                        >
+                        <v-icon
+                          v-if="!successPass1"
+                          color="red"
+                          >{{ passRule1 }}</v-icon
+                        >
                     </template>
                     </v-text-field>
                   </v-col>
@@ -207,6 +209,7 @@
               <v-btn
                 color="blue darken-1"
                 text
+                @click="passwordConfirm"
               >
                 Valider
               </v-btn>
@@ -495,6 +498,33 @@
           })
           this.closeStatus()
       },
+      passwordConfirm () {
+          let _status = (this.editedItem.status == 'Actif')?'Inactif':'Actif'
+          const options = {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                'x-access-token': 'Bearer ' +localStorage.getItem("token")
+              },
+              
+              body: JSON.stringify({
+                id: this.editedItem.id, 
+                login: this.editedItem.login,
+                password: this.password
+              })
+          };
+          fetch(`/user`, options).then(resp => {
+              return resp.json()
+            }).then(data =>{
+            console.log("ID ",data.count)
+            if(data.count > 0){
+              this.initialize()
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+          this.closePassword()
+      },
       deleteItemConfirm () {
           console.log("INDEX ",this.editedItem.id)
           const options = {
@@ -558,15 +588,16 @@
                 'x-access-token': 'Bearer ' +localStorage.getItem("token")
               },
               body: JSON.stringify({
-                        id:this.editedItem.id, 
-                        nom: this.editedItem.nom,
-                        login:this.editedItem.login,
-                        password: this.editedItem.password,
-
-                      })
+                  id:this.editedItem.id, 
+                  nom: this.editedItem.nom,
+                  role: this.editedItem.role
+              })
             };
           fetch(`/user`, options).then(resp => {
-              return resp.json()
+            if(resp.status == 401){
+                this.$router.push('/login')
+              }else
+                return resp.json()
             }).then(data =>{
             console.log("ID ",data.count)
             if(data.count > 0){
@@ -575,7 +606,6 @@
             }
           }).catch(err => {
             console.log(err)
-            this.$route.push('/login')
           })
         } else {
           console.log("POST",this.editedItem.nom)
@@ -585,22 +615,28 @@
               "Content-Type": "application/json",
               'x-access-token': 'Bearer ' +localStorage.getItem("token")
             },
-            body: JSON.stringify({nom: this.editedItem.nom})
+            body: JSON.stringify({
+              login: this.editedItem.login,
+              nom: this.editedItem.nom,
+              role: this.editedItem.role
+            })
           };
           fetch(`/user`, options).then(resp => {
-              return resp.json()
-            }).then(data =>{
-            console.log("ID ",data.id)
-            if(data.id > 0){
+              if(resp.status == 409)
+                alert("Le login existe déjà")
+              if(resp.status == 401){
+                this.$router.push('/login')
+              }else
+                return resp.json()
+          }).then(data =>{
+            console.log("ID ",data.count)
+            if(data.count > 0){
               this.initialize()
-              //this.data.push(this.editedItem)
             }
               
           }).catch(err => {
             console.log(err)
-            this.$route.push('/login')
           })
-          
         }
         this.close()
     }
