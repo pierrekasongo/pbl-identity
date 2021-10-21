@@ -8,20 +8,18 @@ router.get('/:id/:include', auth,(req,res) => {
     console.log("Find Famille by parent")
     let parentId = req.params.id
     let include = req.params.include
-
+    let data
     if(include == 0)
     {
         console.log("WITHOUT INCLUDE")
-        Famille.findByParent(parentId).then(data =>{
-            console.log(data.rows)
-            res.status(200).json(data.rows)
-        })
+        data = Famille.findByParent(parentId).
+
+        res.status(200).json(data.values)
     }else{
         console.log("WITH INCLUDE")
-        Famille.findWithInclude(parentId).then(data =>{
-            console.log(data.rows)
-            res.status(200).json(data.rows)
-        })
+        data = Famille.findWithInclude(parentId)
+
+        res.status(200).json(data.values)
     }
     
 })

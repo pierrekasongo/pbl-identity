@@ -1,63 +1,47 @@
 var express = require('express')
-const db = require('./db')
+const db = require('../utils/db')
 
 const entreprise = {
-
     find:() =>{
-        return new Promise(async (resolve, reject)=>{
-            let res;
-            try{
-                const pool = db.connect()
-                const req = `SELECT * FROM entreprise`
-                res =  await pool.query(req)
-                resolve(res)
-            }catch(err){
-                console.log(err.message)
-                reject()
-            }
-            
-            
-        })
+        let res;
+        try{
+            const req = `SELECT * FROM entreprise`
+            res =  db.query(req)
+            return res
+        }catch(err){
+            console.log(err.message)
+            return err
+        }
     },
     create:(nom) =>{
-        return new Promise(async (resolve, reject)=>{
-            try{
-                const pool = db.connect()
-                const req = `INSERT INTO entreprise(nom) VALUES($1) RETURNING id`
-                const res =  await pool.query(req,[nom])
-                resolve(res)
-            }catch(err){
-                console.log(err)
-                reject()
-            }
-            
-        })
+        try{
+            const req = `INSERT INTO entreprise(nom) VALUES(?)`
+            const res =  db.query(req,[nom])
+            return res
+        }catch(err){
+            console.log(err)
+            return err
+        }
     },
     delete:(id) =>{
-        return new Promise(async (resolve, reject)=>{
-            try{
-                const pool = db.connect()
-                const req = `DELETE FROM entreprise WHERE id=$1`
-                const res =  await pool.query(req,[id])
-                resolve(res)
-            }catch(err){
-                console.log(err.message)
-                reject
-            }
-        })
+        try{
+            const req = `DELETE FROM entreprise WHERE id=?`
+            const res =  db.query(req,[id])
+            return res
+        }catch(err){
+            console.log(err.message)
+            return err
+        }
     },
     update:(id,nom) =>{
-        return new Promise(async (resolve, reject)=>{
-            try{
-                const pool = db.connect()
-                const req = `UPDATE entreprise SET nom = $2 WHERE id = $1`
-                const res = await pool.query(req,[id,nom])
-                resolve(res)
-            }catch(err){
-                console.log(err.message)
-                reject()
-            }
-        })
+        try{
+            const req = `UPDATE entreprise SET nom = ? WHERE id = ?`
+            const res = db.query(req,[nom,id])
+            return res
+        }catch(err){
+            console.log(err.message)
+            return err
+        }
     }
 }
 module.exports = entreprise

@@ -9,10 +9,9 @@ client.get('/find?id',auth,(req,res)=>{
 
   let id = req.params.id
     
-    Client.find(id).then(data =>{
-            console.log(data)
-            res.status(200).json(data)
-        })
+    const data = Client.find(id)
+
+    res.status(200).json(data.values)
 })
 client.post('/',auth, (req,res)=>{
 
@@ -28,10 +27,10 @@ client.post('/',auth, (req,res)=>{
     let parent = req.body.parent
     let relation = req.body.relation
 
-    Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
-        localisation,num_id,entreprise,parent,relation).then(outcome =>{
-            res.status(200).json(outcome.rows)
-        })
+    const data = Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
+        localisation,num_id,entreprise,parent,relation)
+
+    res.status(200).json(data.values)
 })
 
 module.exports = client

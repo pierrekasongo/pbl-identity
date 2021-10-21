@@ -4,22 +4,19 @@ const router = express.Router()
 const Entreprise = require('../modules/Entreprise')
 const auth = require('../middleware/auth')
 
-router.get('/', auth,(req,res)=>{
+router.get('/',auth,(req,res)=>{
     console.log("Get all entreprise")
-    Entreprise.find().then(data =>{
-        console.log(data.rows)
-        res.status(200).send(data.rows)
-    })
+    const data = Entreprise.find()
+    console.log(data.values)
+    res.status(200).send(data.values)
 })
 
 router.get('/find?id',auth, (req,res)=>{
 
   let id = req.params.id
     
-  Entreprise.find(id).then(data =>{
-            console.log(data)
-            res.status(200).json(data)
-        })
+  const data = Entreprise.find(id)
+  res.status(200).json(data.values)
 })
 
 router.put('/', auth,(req,res)=>{
@@ -27,25 +24,20 @@ router.put('/', auth,(req,res)=>{
     let id = req.body.id
     let nom = req.body.nom
 
-    Entreprise.update(id,nom).then(outcome =>{
-        console.log("RESULT ",outcome.rowCount)
-        res.status(200).json({count:outcome.rowCount})
-    })
+    const data = Entreprise.update(id,nom)
+    res.status(200).json({count:data.affectedRows})
 })
 router.post('/',auth, (req,res)=>{
     console.log("Post new entreprise")
     let nom = req.body.nom
-    Entreprise.create(nom,).then(outcome =>{
-        console.log(outcome.rows[0])
-        res.status(200).json(outcome.rows[0])
-    })
+    const data = Entreprise.create(nom,)
+    res.status(200).json(data.affectedRows)
 })
 router.delete('/:id',auth,(req,res)=>{
     console.log("DELETE entreprise")
     let id = req.params.id
-    Entreprise.delete(id).then(outcome =>{
-        console.log(outcome.rowCount)
-        res.status(200).json({count:outcome.rowCount})
-    })
+    const data = Entreprise.delete(id).
+
+    res.status(200).json({count:data.affectedRows})
 })
 module.exports = router

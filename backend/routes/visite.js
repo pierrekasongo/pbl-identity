@@ -7,18 +7,15 @@ const auth = require('../middleware/auth')
 router.get('/:id', auth,(req,res)=>{
     
     let clientId = req.params.id
+    let data
     if(clientId > 0){
         console.log("Find Visites by Client")
-        Visite.find(clientId).then(data =>{
-            console.log(data.rows)
-            res.status(200).json(data.rows)
-        })
+        data = Visite.find(clientId)
+        res.status(200).json(data.values)
     }else{
         console.log("Find All Visites")
-        Visite.findAll().then(data =>{
-            console.log(data.rows)
-            res.status(200).json(data.rows)
-        })
+        data = Visite.findAll()
+        res.status(200).json(data.values)
     }
     
 })
@@ -26,18 +23,16 @@ router.post('/',auth, (req,res)=>{
     console.log("Post New Visite")
     let {date_visite, motif, utilisateur, patient} = req.body
  
-    Visite.create(date_visite,motif,utilisateur,patient).then(outcome =>{
-        console.log("Result ", outcome)
-        res.status(200).json({count: outcome.rowCount})
-    })
+    const data = Visite.create(date_visite,motif,utilisateur,patient)
+
+    res.status(200).json({count: data.affectedRows})
 })
 router.delete('/:id',auth,(req,res)=>{
     console.log("DELETE visite")
     let id = req.params.id
-    Visite.delete(id).then(outcome =>{
-        console.log(outcome.rowCount)
-        res.status(200).json({count:outcome.rowCount})
-    })
+    const data = Visite.delete(id)
+
+    res.status(200).json({count:data.affectedRows})
 })
 
 module.exports = router

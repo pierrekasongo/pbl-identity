@@ -7,15 +7,16 @@ const upload = multer({dest:'public/uploads/'})
 const router = express.Router()
 const Client = require('../modules/Client')
 const path = require('path')
-const Utils = require('../modules/Utils')
+const Utils = require('../utils/Utils')
 const auth = require('../middleware/auth')
 const conf = require('../config/conf')
 const { config } = require('process')
 
-router.get('/', auth, (req,res)=>{
+router.get('/',auth, (req,res)=>{
     console.log("Get all Clients")
     Client.findParents().then(data =>{
-        res.status(200).json(data.rows)
+        console.log("Client ", data)
+        res.status(200).json(data)
     })
 })
 
@@ -24,8 +25,8 @@ router.get('/:id',auth, (req,res)=>{
     let clientId = req.params.id
     
     Client.find(clientId).then(data =>{
-        console.log(data.rows)
-        res.status(200).json(data.rows[0])
+        console.log("Client ", data)
+        res.status(200).json(data[0])
     })
 })
 
@@ -38,8 +39,9 @@ router.post('/upload',upload.single("file"), (req,res, next)=>{
 
     console.log("Filename ", _filename)
 
-    Client.uploadPhoto(req.body.client, _filename).then(outcome =>{
-            res.status(200).json({count: outcome.rowCount})
+    Client.uploadPhoto(req.body.client, _filename).then(data =>{
+        console.log("Client ", data)
+        res.status(200).json({count: data.affectedRows})
     })
 })
 
@@ -62,8 +64,9 @@ router.post('/',auth, (req,res)=>{
     let parent = req.body.parent || 0
     let relation = req.body.relation || "Agent"
     Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
-        localisation,num_id,entreprise,parent,relation).then(outcome =>{
-            res.status(200).json({count: outcome.rowCount})
+        localisation,num_id,entreprise,parent,relation)
+        .then(data =>{ 
+            res.status(200).json({count: data.affectedRows})
     })
 })
 
@@ -81,18 +84,19 @@ router.put('/',auth, (req,res)=>{
 
     Client.update(id,prenom,nom,postnom,sexe,date_naissance,
                             localisation,num_id,entreprise)
-                            .then(outcome =>{
-            res.status(200).json({count: outcome.rowCount})
-        })
+            .then(data =>{
+                res.status(200).json({count: data.affectedRows})
+            })
+    
 })
 
 router.delete('/:id',auth,(req,res)=>{
     console.log("DELETE client")
     let id = req.params.id
-    Client.delete(id).then(outcome =>{
-        console.log(outcome.rowCount)
-        res.status(200).json({count:outcome.rowCount})
-    })
+    Client.delete(id)
+          .then(data =>{
+             res.status(200).json({count:outcome.affectedRows}) 
+          })
 })
 
 module.exports = router

@@ -4,18 +4,17 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 
 const User = require('../modules/User')
-const Utils = require('../modules/Utils')
+const Utils = require('../utils/Utils')
 const conf = require('../config/conf')
 const auth = require('../middleware/auth')
 
 
-router.get('/', auth, (req, res) => {
+router.get('/', auth,(req, res) => {
 
     console.log("Get all Users")
-    User.find().then(data => {
-        console.log(data.rows)
-        res.status(200).json(data.rows)
-    })
+    const data = User.find()
+    console.log(data.values)
+    res.status(200).json(data.values)
 })
 
 router.get('/role', (req, res) => {
@@ -38,17 +37,18 @@ router.post('/', auth, (req, res) => {
     })
 })
 
-router.post('/auth', (req, res) => {
+router.post('/auth',  (req, res) => {
     console.log("Authenticate a user")
     const login = req.body.login
     const password = req.body.password
     const checkPass = req.body.checkPass || false
 
     let _password = Utils.hash(password, login)
-
-    User.login(login, _password).then(data => {
-        console.log("Response ", data.rows[0])
-        const _user = data.rows[0]
+    let data
+    User.login(login, _password).then(data =>{
+        console.log("Resp ",data)
+        const _user = data[0]
+        console.log("_user ",_user)
         let token = ''
         //Create token
         if (!checkPass && _user != undefined) {
@@ -71,17 +71,17 @@ router.post('/auth', (req, res) => {
                 token: token
             }
         }
+        console.log(user)
         res.status(200).json(user)
     })
+    
 })
 
 router.delete('/:id', auth, (req, res) => {
     console.log("DELETE user")
     let id = req.params.id
-    User.delete(id).then(outcome => {
-        console.log(outcome.rowCount)
-        res.status(200).json({ count: outcome.rowCount })
-    })
+    const data = User.delete(id)
+    res.status(200).json({ count: data.affectedRows })
 })
 
 router.put('/', (req, res) => {
@@ -94,32 +94,26 @@ router.put('/', (req, res) => {
     let status = req.body.status || ''
 
     console.log(req.body)
-
+    let data
     if (password !== '') {
         //Updating the password
         console.log("Updating password")
         console.log(login, password)
         let _password = Utils.hash(password, login)
         console.log(_password)
-        User.updatePassword(id, _password).then(outcome => {
-            console.log("RESULT ", outcome.rowCount)
-            res.status(200).json({ count: outcome.rowCount })
-        })
+        data = User.updatePassword(id, _password)
+        res.status(200).json({ count: data.affectedRows })
     } else if (status !== '') {
         //Updating name or role
         console.log("Updating status")
-        User.updateStatus(id, status).then(outcome => {
-            console.log("RESULT ", outcome.rowCount)
-            res.status(200).json({ count: outcome.rowCount })
-        })
+        data = User.updateStatus(id, status)
+        res.status(200).json({ count: data.affectedRows })
     } else {
         //Updating name or role
         console.log("Updating nom and/or role")
         console.log(id, nom, role)
-        User.update(id, nom, role).then(outcome => {
-            console.log("RESULT ", outcome.rowCount)
-            res.status(200).json({ count: outcome.rowCount })
-        })
+        data = User.update(id, nom, role)
+        res.status(200).json({ count: data.affectedRows })
     }
 
 })

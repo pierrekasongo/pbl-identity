@@ -9,6 +9,7 @@ const entrepriseRouter = require('./routes/entreprise')
 const visiteRouter = require('./routes/visite')
 const userRouter = require('./routes/user')
 const relationRouter = require('./routes/relation')
+const databaseRouter = require('./routes/database')
 
 app.use(express.urlencoded({ extended: true }))
 //app.use(bodyParser.json());
@@ -24,6 +25,7 @@ app.use('/entreprise', entrepriseRouter)
 app.use('/visite', visiteRouter)
 app.use('/user', userRouter)
 app.use('/relation', relationRouter)
+app.use('/database', databaseRouter)
 
 app.listen(3000, () =>{
     console.log("Le serveur est à l'écoute")
