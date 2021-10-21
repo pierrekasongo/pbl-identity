@@ -301,11 +301,10 @@
           }else
             return resp.json()
         }).then(data =>{
-          console.log(data)
+          console.log("CLIENT ", data)
           this.data = data
         }).catch(err => {
           console.log(err)
-          this.$router.push('/login')
         })
       },
       loadEntreprise(){
@@ -326,7 +325,6 @@
           this.entreprise = data
         }).catch(err => {
           console.log(err)
-          this.$route.push('/login')
         })
       },
       handleRowClick:function(row){
@@ -423,7 +421,6 @@
             }
           }).catch(err => {
           console.log(err)
-          this.$route.push('/login')
         })
         } else {
           console.log("POSTING")
@@ -458,7 +455,6 @@
               
           }).catch(err => {
           console.log(err)
-          this.$route.push('/login')
         })
           
         }
