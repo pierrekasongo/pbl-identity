@@ -2,20 +2,56 @@ const express = require('express')
 const winston = require('winston')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-
-const Parameter = require('../modules/Database')
-const conf = require('../config/conf')
+const path = require('path')
+const fs = require('fs')
+const Database = require('../modules/Database')
 const auth = require('../middleware/auth')
-const dbscript = require('../utils/run_backup')
+const conf = require('../config/conf')
 
+router.post('/', auth, (req, res) => {
+    let {filename} = req.body || ''
+    if(filename === ''){
+        console.log("Backup database...")
+        let rp = Database.dump()
+        if (!rp) {
+            res.status(201).json({ success: false })
+        } else {
+            res.status(200).json({
+                success: true,
+                filename: rp.filename
+            })
+        }
+    }else{
+        console.log("Restoring file")
+        let rp = Database.restore(filename)
+        console.log("RP ",rp)
+        if (!rp) {
+            console.log("Failure")
+            res.status(201).json({ success: false })
+        } else {
+            console.log("Success")
+            res.status(200).json({
+                success: true,
+                filename: rp.filename
+            })
+        }
+    }
+})
 
-router.get('/', (req, res) => {
-    console.log("Backup database...")
-    let resp = dbscript.backup()
-    if(resp)
-        res.status(200).json({data:'true'})
-    else
-        res.status(201).json({data:'false'})
+router.get('/', auth, (req, res) => {
+    console.log("List all dispatches...")
+    let files = []
+    fs.readdir(conf.DISPATCH_PATH, function (err, _files) {
+        if (err) {
+            console.log("Unable to scan directory: " + err)
+            return null
+        }
+        _files.forEach(function (file) {
+            console.log(file)
+            files.push({nom:file})
+        })
+        res.status(200).json(files)
+    })
 })
 
 module.exports = router

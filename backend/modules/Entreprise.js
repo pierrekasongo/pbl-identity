@@ -2,46 +2,63 @@ var express = require('express')
 const db = require('../utils/db')
 
 const entreprise = {
-    find:() =>{
+
+    find: () => {
         let res;
-        try{
-            const req = `SELECT * FROM entreprise`
-            res =  db.query(req)
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+        return new Promise(function (resolve, reject) {
+            try {
+                const req = `SELECT * FROM entreprise`
+                db.query(req, function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     },
-    create:(nom) =>{
-        try{
-            const req = `INSERT INTO entreprise(nom) VALUES(?)`
-            const res =  db.query(req,[nom])
-            return res
-        }catch(err){
-            console.log(err)
-            return err
-        }
+    create: (nom) => {
+        return new Promise(function (resolve, reject) {
+            try {
+                const req = `INSERT INTO entreprise(nom) VALUES(?)`
+                db.query(req, [nom], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err)
+                return reject(err)
+            }
+        })
     },
-    delete:(id) =>{
-        try{
-            const req = `DELETE FROM entreprise WHERE id=?`
-            const res =  db.query(req,[id])
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+    delete: (id) => {
+        return new Promise(function (resolve, reject) {
+            try {
+                const req = `DELETE FROM entreprise WHERE id=?`
+                db.query(req, [id], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     },
-    update:(id,nom) =>{
-        try{
-            const req = `UPDATE entreprise SET nom = ? WHERE id = ?`
-            const res = db.query(req,[nom,id])
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+    update: (id, nom) => {
+        return new Promise(function (resolve, reject) {
+            try {
+                const req = `UPDATE entreprise SET nom = ? WHERE id = ?`
+                db.query(req, [nom, id], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     }
 }
 module.exports = entreprise

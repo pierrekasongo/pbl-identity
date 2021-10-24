@@ -12,14 +12,14 @@ router.get('/:id/:include', auth,(req,res) => {
     if(include == 0)
     {
         console.log("WITHOUT INCLUDE")
-        data = Famille.findByParent(parentId).
-
-        res.status(200).json(data.values)
+        Famille.findByParent(parentId).then(data =>{
+            res.status(200).json(data)
+         })
     }else{
         console.log("WITH INCLUDE")
-        data = Famille.findWithInclude(parentId)
-
-        res.status(200).json(data.values)
+        Famille.findWithInclude(parentId).then(data =>{
+            res.status(200).json(data)
+        })
     }
     
 })

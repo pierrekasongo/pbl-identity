@@ -4,24 +4,29 @@ const db = require('../utils/db')
 
 const visite = {
 
-    findAll:() =>{
-        try{
-            const req = `(SELECT v.id AS id,  DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_visite,
+    findAll: () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const req = `(SELECT v.id AS id,  DATE_FORMAT(c.date_naissance, '%d-%m-%Y') AS date_visite,
                             v.motif AS motif, u.nom AS utilisateur,
                             CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                             FROM visite v, utilisateur u, client c 
                             WHERE v.utilisateur = u.id
                             AND v.client = c.id) `
-            const res =   db.query(req)
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+                db.query(req, function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     },
-    find:(id) =>{
-        try{
-            const req = `(SELECT v.id AS id, DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_visite,
+    find: (id) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const req = `(SELECT v.id AS id, DATE_FORMAT(c.date_naissance, '%d-%m-%Y') AS date_visite,
                             v.motif AS motif, u.nom AS utilisateur,
                             CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                             FROM visite v, utilisateur u, client c 
@@ -31,61 +36,80 @@ const visite = {
                             
                             UNION 
                             
-                            (SELECT v.id AS id,  DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_visite,
+                            (SELECT v.id AS id,  DATE_FORMAT(c.date_naissance, '%d-%m-%Y') AS date_visite,
                             v.motif AS motif, u.nom AS utilisateur,
                             CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                             FROM visite v, utilisateur u, client c 
                             WHERE v.utilisateur = u.id
                             AND v.client = c.id
                             AND v.client IN(SELECT id FROM client WHERE parent = ?) )`
-            const res =   db.query(req, [id])
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+                db.query(req, [id,id], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     },
-    findByUser:(user) =>{
-        try{
-            const req = `SELECT * FROM visite WHERE utilisateur = ?`
-            const res =   db.query(req,[user])
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+    findByUser: (user) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const req = `SELECT * FROM visite WHERE utilisateur = ?`
+                db.query(req, [user], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     },
-    findByDate:(date) =>{
-        try{
-            const req = `SELECT * FROM visite WHERE date_visite = ?`
-            const res =   db.query(req,[date])
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+    findByDate: (date) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const req = `SELECT * FROM visite WHERE date_visite = ?`
+                db.query(req, [date], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     },
-    create:(date,motif,user,patient) =>{
+    create: (date, motif, user, patient) => {
         console.log("Creating...")
-        try{
-            const req = `INSERT INTO visite(date_visite,motif,utilisateur,client) 
+        return new Promise(async (resolve, reject) => {
+            try {
+                const req = `INSERT INTO visite(date_visite,motif,utilisateur,client) 
                             VALUES(?,?,?,?)`
-            const res =   db.query(req,[date,motif,user,patient])
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+                db.query(req, [date, motif, user, patient], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     },
-    delete:(id) =>{
-        try{
-            const req = `DELETE FROM visite WHERE id=?`
-            const res =   db.query(req,[id])
-            return res
-        }catch(err){
-            console.log(err.message)
-            return err
-        }
+    delete: (id) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const req = `DELETE FROM visite WHERE id=?`
+                db.query(req, [id], function (err, result, fields) {
+                    if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
     }
 }
 module.exports = visite

@@ -9,7 +9,7 @@ const user = {
         return new Promise(function (resolve, reject) {
             try {
                 const req = `SELECT id,login,nom,role,status FROM utilisateur`
-                res = db.query(req, function (err, result, fields) {
+                db.query(req, function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
                 });
@@ -24,7 +24,7 @@ const user = {
             let res;
             try {
                 const req = `SELECT id,login,nom,role FROM utilisateur WHERE login = ? AND status= ? `
-                res = db.query(req, [login, 'Actif'], function (err, result, fields) {
+                db.query(req, [login, 'Actif'], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
                 });
@@ -53,7 +53,7 @@ const user = {
         return new Promise(function (resolve, reject) {
             try {
                 const req = `INSERT INTO utilisateur(login,nom,role,status) VALUES(?,?,?,?)`
-                const res = db.query(req, [
+                db.query(req, [
                     login, nom, role, 'Actif'
                 ], function (err, result, fields) {
                     if (err) throw err;
@@ -61,7 +61,7 @@ const user = {
                 });
             } catch (err) {
                 console.log(err.message)
-                return err
+                return reject(err)
             }
         })
     },
@@ -69,7 +69,7 @@ const user = {
         return new Promise(async (resolve, reject) => {
             try {
                 const req = `DELETE FROM utilisateur WHERE id=?`
-                const res = db.query(req, [id], function (err, result, fields) {
+                db.query(req, [id], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
                 });
@@ -84,13 +84,13 @@ const user = {
         return new Promise(async (resolve, reject) => {
             try {
                 const req = `UPDATE utilisateur SET nom = ?, role = ? WHERE id = ?`
-                const res = db.query(req, [nom, role, id], function (err, result, fields) {
+                db.query(req, [nom, role, id], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
                 });
             } catch (err) {
                 console.log(err.message)
-                return reject()
+                return reject(err)
             }
         })
     },
@@ -98,13 +98,13 @@ const user = {
         return new Promise(async (resolve, reject) => {
             try {
                 const req = `UPDATE utilisateur SET status = ? WHERE id = ?`
-                const res = db.query(req, [status, id], function (err, result, fields) {
+                db.query(req, [status, id], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
                 });
             } catch (err) {
                 console.log(err.message)
-                return reject()
+                return reject(err)
             }
         })
     },
@@ -112,13 +112,13 @@ const user = {
         return new Promise(async (resolve, reject) => {
             try {
                 const req = `UPDATE utilisateur SET password = ? WHERE id = ?`
-                const res = db.query(req, [password, id], function (err, result, fields) {
+                db.query(req, [password, id], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
                 });
             } catch (err) {
                 console.log(err.message)
-                return reject()
+                return reject(err)
             }
         })
     }

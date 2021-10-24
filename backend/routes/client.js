@@ -23,7 +23,6 @@ router.get('/',auth, (req,res)=>{
 router.get('/:id',auth, (req,res)=>{
     console.log("Find by Id")
     let clientId = req.params.id
-    
     Client.find(clientId).then(data =>{
         console.log("Client ", data)
         res.status(200).json(data[0])
@@ -86,7 +85,7 @@ router.put('/',auth, (req,res)=>{
                             localisation,num_id,entreprise)
             .then(data =>{
                 res.status(200).json({count: data.affectedRows})
-            })
+    })
     
 })
 

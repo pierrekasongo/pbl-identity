@@ -12,9 +12,9 @@ const auth = require('../middleware/auth')
 router.get('/', auth,(req, res) => {
 
     console.log("Get all Users")
-    const data = User.find()
-    console.log(data.values)
-    res.status(200).json(data.values)
+    const data = User.find().then(data =>{
+         res.status(200).json(data)
+    })
 })
 
 router.get('/role', (req, res) => {
@@ -80,8 +80,9 @@ router.post('/auth',  (req, res) => {
 router.delete('/:id', auth, (req, res) => {
     console.log("DELETE user")
     let id = req.params.id
-    const data = User.delete(id)
-    res.status(200).json({ count: data.affectedRows })
+    User.delete(id).then(data =>{
+        res.status(200).json({ count: data.affectedRows })
+     })  
 })
 
 router.put('/', (req, res) => {
@@ -101,19 +102,22 @@ router.put('/', (req, res) => {
         console.log(login, password)
         let _password = Utils.hash(password, login)
         console.log(_password)
-        data = User.updatePassword(id, _password)
-        res.status(200).json({ count: data.affectedRows })
+        User.updatePassword(id, _password).then(data =>{
+            res.status(200).json({ count: data.affectedRows })
+         })  
     } else if (status !== '') {
         //Updating name or role
         console.log("Updating status")
-        data = User.updateStatus(id, status)
-        res.status(200).json({ count: data.affectedRows })
+        User.updateStatus(id, status).then(data =>{
+            res.status(200).json({ count: data.affectedRows })
+         })  
     } else {
         //Updating name or role
         console.log("Updating nom and/or role")
         console.log(id, nom, role)
-        data = User.update(id, nom, role)
-        res.status(200).json({ count: data.affectedRows })
+        User.update(id, nom, role).then(data =>{
+            res.status(200).json({ count: data.affectedRows })
+         })  
     }
 
 })
