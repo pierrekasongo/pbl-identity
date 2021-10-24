@@ -30,6 +30,13 @@
           vertical
         ></v-divider>
         <v-spacer></v-spacer>
+        <v-btn color="secondary" dark class="mb-2">
+            <v-icon dark>mdi-download</v-icon>
+            <download-excel :data="data">
+              Télécharger
+            </download-excel>
+          </v-btn>
+          <v-divider class="mx-4" inset vertical></v-divider>
         <v-dialog
           v-model="dialog"
           max-width="500px"
@@ -153,6 +160,9 @@
 </template>
 <script>
 import axios from 'axios'
+import Vue from "vue";
+import JsonExcel from "vue-json-excel";
+Vue.component("downloadExcel", JsonExcel);
   export default {
     name: 'Visite',
     props:['clientId'],
@@ -181,6 +191,9 @@ import axios from 'axios'
           nom: '',
         },
       }  
+    },
+    component:{
+      JsonExcel
     },
     methods:{
       loadFamille(){

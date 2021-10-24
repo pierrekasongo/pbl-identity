@@ -7,7 +7,7 @@
 <template>
   <v-container>
     <v-toolbar flat>
-      <v-toolbar-title>Sauvegarde et restauration</v-toolbar-title>
+      <v-toolbar-title>Création du dispatch</v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
     </v-toolbar>
@@ -15,224 +15,160 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col cols="30" sm="12" md="8">
-              <v-text-field
-                v-model="old_password"
-                :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="[required, min6]"
-                :type="show ? 'text' : 'password'"
-                name="old_password"
-                label="Ancien mot de passe"
-                counter
-                @click:append="show = !show"
+            <v-col>
+              <v-btn @click="generate" color="primary darken-2" large>
+                <v-icon dark>mdi-cloud-upload</v-icon>
+                Générer le dispatch</v-btn
               >
-                <template v-slot:append>
-                  <v-icon v-if="successPassOld" color="green">{{
-                    oldPassRule
-                  }}</v-icon>
-                  <v-icon v-if="!successPassOld" color="red">{{
-                    oldPassRule
-                  }}</v-icon>
-                </template>
-              </v-text-field>
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="30" sm="12" md="8">
-              <v-text-field
-                v-model="password"
-                :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="[required, min6, matchingPasswords]"
-                :type="show1 ? 'text' : 'password'"
-                name="password"
-                label="Mot de passe"
-                counter
-                @click:append="show1 = !show1"
-              >
-                <template v-slot:append>
-                  <v-icon v-if="successPass" color="green">{{
-                    passRule
-                  }}</v-icon>
-                  <v-icon v-if="!successPass" color="red">{{
-                    passRule
-                  }}</v-icon>
-                </template>
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col cols="30" sm="12" md="8">
-              <v-text-field
-                v-model="password2"
-                :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="[required, min6, matchingPasswords]"
-                :type="show2 ? 'text' : 'password'"
-                name="password2"
-                label="Confirmer mot de passe"
-                counter
-                @click:append="show2 = !show2"
-              >
-                <template v-slot:append>
-                  <v-icon v-if="successPass1" color="green">{{
-                    passRule1
-                  }}</v-icon>
-                  <v-icon v-if="!successPass1" color="red">{{
-                    passRule1
-                  }}</v-icon>
-                </template>
-              </v-text-field>
+            <v-col>
+              <v-progress-circular
+                v-if="generating"
+                indeterminate
+                color="red"
+              ></v-progress-circular>
             </v-col>
           </v-row>
         </v-container>
       </v-card-text>
+    </v-card>
 
-      <v-card-actions>
-        <v-btn color="blue darken-1" text @click="changePassword">
-          Valider
-        </v-btn>
-      </v-card-actions>
+    <v-toolbar flat>
+      <v-toolbar-title>Dispatches disponibles</v-toolbar-title>
+      <v-divider class="mx-4" inset vertical></v-divider>
+      <v-spacer></v-spacer>
+
+      <v-dialog v-model="dialog" max-width="500px">
+        <v-card>
+          <v-card-title class="text-h5"
+            >Voulez-vous vraiment charger ce dispatch?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="close">Annuler</v-btn>
+            <v-btn color="blue darken-1" text @click="loadConfirm">OK</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-toolbar>
+    <v-card>
+      <v-card-text>
+        <v-container>
+          <v-data-table :headers="headers" :items="files" class="elevation-1">
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-icon small class="mr-2" @click="selectItem(item)">
+                mdi-upload
+              </v-icon>
+            </template>
+          </v-data-table>
+        </v-container>
+      </v-card-text>
     </v-card>
   </v-container>
 </template>
 <script>
 import axios from "axios";
 export default {
-  name: "PhotoUploader",
+  name: "Sauvegarde",
   data() {
     return {
-      show: false,
-      show1: false,
-      show2: false,
-      client: {},
-      old_password: "",
-      password: "",
-      password2: "",
-      successPass: false,
-      successPass1: false,
-      successPassOld: false,
+      dialog: false,
+      generating: false,
+      file: null,
+      files: [],
+      headers: [
+        { text: "Nom", value: "nom" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
+      selectedFile: {
+        nom: "",
+      },
     };
   },
   methods: {
-    changePassword: function () {
-        let _login = localStorage.getItem("login")
-        let _password = this.old_password
-        let data = {
-          login:_login,
-          password: _password,
-          checkPass: true
-        }
-      axios.post("/user/auth/", data)
+    generate: function () {
+      this.generating = true;
+      const options = {
+        headers: {
+          "x-access-token": "Bearer " + localStorage.getItem("token"),
+        },
+      };
+      axios
+        .post("/database/", options)
         .then((resp) => {
-          console.log("Checking current password");
-          if(resp.data)
-            return resp.data
-          else
-            alert("L'ancien mot de passe est incorrect")
-        })
-        .then(user => {
-          console.log("User ", user);
-          const options = {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                'x-access-token': 'Bearer ' +localStorage.getItem("token")
-              },
-              
-              body: JSON.stringify({
-                id: user.id,
-                login: user.login,
-                password: this.password
-              })
-          };
-          fetch(`/user`, options).then(resp => {
-              return resp.json()
-            }).then(data =>{
-            console.log("ID ",data.count)
-            if(data.count > 0){
-              //then loggout
-              this.$router.push('/login')
-            }
-          }).catch(err => {
-            console.log(err)
-          })
+          console.log("Generate dispatch");
+          if (resp.success)
+            alert(`Dispatch ${resp.filename} généré avec succès`);
+          else alert("Le processus a echoué");
+          this.generating = false;
         })
         .catch((err) => {
           console.log("ERROR ", err.message);
         });
     },
-    required: function (value) {
-      if (value) {
-        return true;
-      } else {
-        return "Champ requis.";
-      }
+    close() {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.selectedItem = Object.assign({}, this.defaultItem);
+      });
     },
-    min6: function (value) {
-      if (value.length >= 6) {
-        return true;
-      } else {
-        return "Au moins 6 caractères requis.";
-      }
+    selectItem(item) {
+      this.selectedFile = item;
+      console.log(this.selectedFile);
+      this.dialog = true;
     },
-    matchingPasswords: function () {
-      if (this.password === this.password2) {
-        return true;
-      } else {
-        return "Mots de passe différents.";
-      }
+
+    loadConfirm() {
+      console.log("Selected ", this.selectedFile.nom);
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": "Bearer " + localStorage.getItem("token"),
+        },
+
+        body: JSON.stringify({ filename: this.selectedFile.nom }),
+      };
+      fetch("/database/", options)
+        .then((resp) => {
+          console.log("Generate dispatch");
+          console.log("Response ",resp)
+          if (resp.success)
+            alert(`Dispatch ${resp.filename} chargé avec succès`);
+          else alert("Le processus a echoué");
+          this.generating = false;
+        })
+        .catch((err) => {
+          console.log("ERROR ", err.message);
+        });
+      this.close();
     },
-  },
-  computed: {
-    oldPassRule: function () {
-      if (this.old_password === "") {
-        // field is empty
-        this.successPassOld = false;
-        return "";
-      } else if (this.min6(this.old_password) === true) {
-        // password ok
-        this.successPassOld = true;
-        return "mdi-check";
-      } else {
-        // password wrong
-        this.successPassOld = false;
-        return "mdi-close";
-      }
-    },
-    passRule: function () {
-      if (this.password === "") {
-        // field is empty
-        this.successPass = false;
-        return "";
-      } else if (this.min6(this.password) === true) {
-        // password ok
-        this.successPass = true;
-        return "mdi-check";
-      } else {
-        // password wrong
-        this.successPass = false;
-        return "mdi-close";
-      }
-    },
-    passRule1: function () {
-      if (this.password2 === "") {
-        // field is empty
-        this.successPass1 = false;
-        return "";
-      } else if (
-        this.min6(this.password2) === true &&
-        this.matchingPasswords() === true
-      ) {
-        // password ok
-        this.successPass1 = true;
-        return "mdi-check";
-      } else {
-        // password wrong
-        this.successPass1 = false;
-        return "mdi-close";
-      }
+    watch: {
+      dialog(val) {
+        val || this.close();
+      },
     },
   },
-  created: function () {},
+  created: function () {
+    const options = {
+      headers: {
+        "x-access-token": "Bearer " + localStorage.getItem("token"),
+      },
+    };
+    axios
+      .get("/database/", options)
+      .then((resp) => {
+        console.log("Get files");
+        console.log("Response ", resp.data);
+        if (resp.data.length > 0) {
+          console.log("Inside");
+          this.files = resp.data;
+        }
+      })
+      .catch((err) => {
+        console.log("ERROR ", err.message);
+      });
+  },
 };
 </script>

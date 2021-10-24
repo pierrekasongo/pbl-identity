@@ -29,6 +29,13 @@
           vertical
         ></v-divider>
         <v-spacer></v-spacer>
+        <v-btn color="secondary" dark class="mb-2">
+            <v-icon dark>mdi-download</v-icon>
+            <download-excel :data="data">
+              Télécharger
+            </download-excel>
+          </v-btn>
+          <v-divider class="mx-4" inset vertical></v-divider>
         <v-dialog
           v-model="dialog"
           max-width="500px"
@@ -225,6 +232,9 @@
   </v-card>
 </template>
 <script>
+import Vue from "vue";
+import JsonExcel from "vue-json-excel";
+Vue.component("downloadExcel", JsonExcel);
   export default {
     name:'Famille',
     props:['parentId'],
@@ -257,6 +267,9 @@
           nom: '',
         },
       }
+    },
+    component:{
+      JsonExcel
     },
     methods:{
       gotoUpload:function(item){
