@@ -6,29 +6,6 @@ var MysqlTools = require('mysql-rp-dump');
 
 var tool = new MysqlTools();
 const database = {
-    /*dump: () => {
-        moment.locale()
-        let d = moment(new Date()).format('D-M-Y')
-        const filename = `dispatch_${d}.sql.gz`
-        console.log("Filename ",filename)
-        mysqldump({
-            connection: {
-                host: conf.DB_HOST,
-                user: conf.DB_USER,
-                password: conf.DB_PWD,
-                database: conf.DB_NAME
-            },
-            dump: { schema: { table: { dropIfExist: true } } },
-            dumpToFile: `../dispatch/${filename}`,
-            compressFile: true,
-        }).then(data =>{
-            console.log("Data ", data)
-            return true
-        }).catch(err =>{
-            return false
-        })
-    },*/
-
     dump: () => {
         console.log("Dumping...")
         

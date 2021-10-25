@@ -9,32 +9,23 @@ const auth = require('../middleware/auth')
 const conf = require('../config/conf')
 
 router.post('/', auth, (req, res) => {
-    let {filename} = req.body || ''
-    if(filename === ''){
+    let { filename } = req.body || ''
+    if (filename === '') {
         console.log("Backup database...")
         let rp = Database.dump()
-        if (!rp) {
-            res.status(201).json({ success: false })
-        } else {
-            res.status(200).json({
-                success: true,
-                filename: rp.filename
-            })
-        }
-    }else{
+        res.status(200).json({
+            success: true,
+            filename: rp.filename
+        })
+    } else {
         console.log("Restoring file")
         let rp = Database.restore(filename)
-        console.log("RP ",rp)
-        if (!rp) {
-            console.log("Failure")
-            res.status(201).json({ success: false })
-        } else {
-            console.log("Success")
-            res.status(200).json({
-                success: true,
-                filename: rp.filename
-            })
-        }
+        console.log("RP ", rp)
+
+        res.status(200).json({
+            success: true,
+            filename: rp.filename
+        })
     }
 })
 
@@ -48,7 +39,7 @@ router.get('/', auth, (req, res) => {
         }
         _files.forEach(function (file) {
             console.log(file)
-            files.push({nom:file})
+            files.push({ nom: file })
         })
         res.status(200).json(files)
     })

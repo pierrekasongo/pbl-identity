@@ -135,7 +135,7 @@ export default {
           console.log("Generate dispatch");
           console.log("Response ",resp)
           if (resp.success)
-            alert(`Dispatch ${resp.filename} chargé avec succès`);
+            alert(`Dispatch chargé avec succès`);
           else alert("Le processus a echoué");
           this.generating = false;
         })
