@@ -34,20 +34,38 @@
       </v-col>
       </v-col>
     </v-row>
+    <v-divider></v-divider>
     <v-row>
       <v-col
         cols="12"
         sm="6"
         md="4"
       >
-          Prénom/Nom/Postnom: 
+          Numéro dossier: 
       </v-col>
       <v-col 
         cols="12"
         sm="6"
         md="4"
       >
-        {{client.nom}} {{client.postnom}} {{client.prenom}}
+        {{client.num_dossier}}
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        Matricule: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >{{client.num_id}}
+
       </v-col>
     </v-row>
 

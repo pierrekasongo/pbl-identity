@@ -11,7 +11,7 @@ const client = {
                 if (id) {
                     req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,
                             sexe,DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_naissance,photo,
-                            localisation,num_id,ent.nom AS entreprise 
+                            localisation,num_id,num_dossier,ent.nom AS entreprise 
                             FROM client cl, entreprise ent
                             WHERE cl.entreprise = ent.id
                             AND parent = 0 OR parent = NULL
@@ -23,7 +23,7 @@ const client = {
                 } else {
                     req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,
                         sexe,DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_naissance,photo,
-                        localisation,num_id,ent.nom AS entreprise 
+                        localisation,num_id,num_dossier,ent.nom AS entreprise 
                         FROM client cl, entreprise ent
                         WHERE cl.entreprise = ent.id
                         AND parent = 0 OR parent = NULL`
@@ -42,7 +42,7 @@ const client = {
     findByParent: (parent) => {
         return new Promise(function (resolve, reject) {
             try {
-                req = `SELECT id, prenom, nom, 
+                req = `SELECT id, prenom, nom, num_dossier,
                     postnom,sexe,DATE_FORMAT(date_naissance, '%d-%m-%Y') AS date_naissance,photo,localisation,relation
                     FROM client WHERE parent = ?`
                 db.query(req, [parent], function (err, result, fields) {
@@ -58,11 +58,11 @@ const client = {
     findWithInclude: (parent) => {
         return new Promise(function (resolve, reject) {
             try {
-                req = `SELECT id, prenom, nom, 
+                req = `SELECT id, prenom, nom, num_dossier,
                     postnom,sexe,DATE_FORMAT(date_naissance, '%d-%m-%Y') AS date_naissance,photo,localisation,relation
                     FROM client WHERE parent = ? 
                     UNION 
-                    SELECT id, prenom, nom, 
+                    SELECT id, prenom, nom, num_dossier,
                     postnom,sexe,DATE_FORMAT(date_naissance, '%d-%m-%Y') AS date_naissance,photo,localisation,relation
                     FROM client WHERE id = ?`
                 db.query(req, [parent,parent], function (err, result, fields) {
@@ -81,7 +81,7 @@ const client = {
             try {
                 const req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,sexe,
                                 DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_naissance,photo,
-                                localisation,num_id,ent.id AS entreprise_id,ent.nom AS entreprise 
+                                localisation,num_id,num_dossier,ent.id AS entreprise_id,ent.nom AS entreprise 
                                 FROM client cl, entreprise ent
                                 WHERE cl.entreprise = ent.id
                                 AND parent = 0`
@@ -110,14 +110,15 @@ const client = {
         })
     },
     create: (prenom, nom, postnom, sexe, date_naissance, photo, localisation,
-        num_id, entreprise, parent, relation) => {
+        num_id, num_dossier,entreprise, parent, relation) => {
         return new Promise(function (resolve, reject) {
             try {
-                const req = `INSERT INTO client(prenom, nom, postnom,sexe,date_naissance,photo,
-                    localisation,num_id,entreprise,parent,relation) VALUES(?,?,?,?,?,?,?,?,?,?,?)`
+                const req = `INSERT INTO client(prenom, nom, postnom,sexe,date_naissance,
+                    localisation,num_id,num_dossier,entreprise,parent,relation) VALUES(?,?,?,?,?,?,?,?,?,?,?)`
                 db.query(req, [prenom, nom, postnom, sexe, date_naissance,
-                    photo, localisation, num_id, entreprise, parent, relation], function (err, result, fields) {
+                    localisation, num_id, num_dossier,entreprise, parent, relation], function (err, result, fields) {
                         if (err) throw err;
+                        console.log("Res ",result)
                         resolve(result)
                 });
             } catch (err) {
@@ -126,13 +127,13 @@ const client = {
             }
         })
     },
-    createChild: (prenom, nom, postnom, sexe, date_naissance, photo, parent, relation) => {
+    createChild: (prenom, nom, postnom, sexe, date_naissance, photo,num_dossier, parent, relation) => {
         return new Promise(function (resolve, reject) {
             try {
                 const req = `INSERT INTO client(prenom, nom, postnom,sexe,date_naissance,photo,
-                ,parent,relation) VALUES(?,?,?,?,?,?,?,?) `
+                num_dossier,parent,relation) VALUES(?,?,?,?,?,?,?,?,?) `
                 db.query(req, [prenom, nom, postnom, sexe, date_naissance,
-                    photo, parent, relation], function (err, result, fields) {
+                    photo,num_dossier, parent, relation], function (err, result, fields) {
                         if (err) throw err;
                         resolve(result)
                 });
@@ -161,9 +162,9 @@ const client = {
         return new Promise(function (resolve, reject) {
             try {
                 const req = `UPDATE client SET prenom = ?,nom=?, postnom=?,sexe=?,date_naissance=?,
-                localisation=?,num_id=?,entreprise=? WHERE id = ?`
+                localisation=?,num_id=?,num_dossier=?,entreprise=? WHERE id = ?`
                 db.query(req, [prenom, nom, postnom, sexe, date_naissance, localisation,
-                    num_id, entreprise, id], function (err, result, fields) {
+                    num_id, num_dossier, entreprise, id], function (err, result, fields) {
                         if (err) throw err;
                         resolve(result)
                 });

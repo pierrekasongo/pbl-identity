@@ -69,7 +69,18 @@
                   </v-col>
                   </template>                
                 </v-row>
-
+                <v-row>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      v-model="editedItem.num_dossier"
+                      label="Numéro dossier"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
                 <v-row>
                   <v-col
                     cols="12"
@@ -247,6 +258,7 @@ Vue.component("downloadExcel", JsonExcel);
         sexe:["M","F"],
         headers: [
           { text: 'ID', value: 'id', align: 'right'},
+          { text: 'Numéro dossier', value: 'num_dossier', align: 'right'},
           { text: 'Prénom', value: 'prenom', align: 'right'},
           { text: 'Nom', value: 'nom', align: 'right'},
           { text: 'PostNom', value: 'postnom', align: 'right'},
@@ -390,6 +402,7 @@ Vue.component("downloadExcel", JsonExcel);
               date_naissance:this.editedItem.date_naissance,
               relation: this.editedItem.relation,
               localisation: this.editedItem.localisation,
+              num_dossier: this.editedItem.num_dossier,
             })
           };
           fetch(`/client/`, options).then(resp => {
@@ -421,7 +434,8 @@ Vue.component("downloadExcel", JsonExcel);
               date_naissance:this.editedItem.date_naissance,
               relation: this.editedItem.relation,
               localisation: this.editedItem.localisation,
-              parent: this.parentId
+              parent: this.parentId,
+              num_dossier: this.num_dossier
             })
           };
           fetch(`/client/`, options).then(resp => {

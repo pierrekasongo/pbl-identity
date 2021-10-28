@@ -8,7 +8,7 @@ const user = {
         let res;
         return new Promise(function (resolve, reject) {
             try {
-                const req = `SELECT id,login,nom,role,status FROM utilisateur`
+                const req = `SELECT id,login,nom,role,entreprise,status FROM utilisateur`
                 db.query(req, function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
@@ -23,7 +23,7 @@ const user = {
         return new Promise(function (resolve, reject) {
             let res;
             try {
-                const req = `SELECT id,login,nom,role FROM utilisateur WHERE login = ? AND status= ? `
+                const req = `SELECT id,login,nom,role,entreprise FROM utilisateur WHERE login = ? AND status= ? `
                 db.query(req, [login, 'Actif'], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
@@ -38,7 +38,7 @@ const user = {
         return new Promise(function (resolve, reject) {
             try {
 
-                const req = `SELECT id,login,nom,role FROM utilisateur WHERE login = ? AND password = ? AND status = ?`
+                const req = `SELECT id,login,nom,role,entreprise FROM utilisateur WHERE login = ? AND password = ? AND status = ?`
                 db.query(req, [login, password, 'Actif'], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)
@@ -52,7 +52,7 @@ const user = {
     create: (login, nom, role) => {
         return new Promise(function (resolve, reject) {
             try {
-                const req = `INSERT INTO utilisateur(login,nom,role,status) VALUES(?,?,?,?)`
+                const req = `INSERT INTO utilisateur(login,nom,role,status,entreprise) VALUES(?,?,?,?,?)`
                 db.query(req, [
                     login, nom, role, 'Actif'
                 ], function (err, result, fields) {

@@ -1,6 +1,34 @@
 <template>
   <v-card>
     <v-card-title>
+      <v-toolbar flat>
+        <v-toolbar-title>Filtrer par entreprise</v-toolbar-title>
+        <v-divider class="mx-4" inset vertical></v-divider>
+      </v-toolbar>
+    </v-card-title>
+
+    <v-card-title>
+      <v-row class="pa-4" justify="space-between">
+        <v-col cols="5">
+          <v-treeview
+            :active.sync="active"
+            :items="items"
+            :load-children="fetchUsers"
+            :open.sync="open"
+            activatable
+            color="warning"
+            open-on-click
+            transition
+          >
+            <template v-slot:prepend="{ item }">
+              <v-icon v-if="!item.children"> mdi-account </v-icon>
+            </template>
+          </v-treeview>
+        </v-col>
+      </v-row>
+    </v-card-title>
+
+    <v-card-title>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -27,12 +55,10 @@
           <v-spacer></v-spacer>
           <v-btn color="secondary" dark class="mb-2">
             <v-icon dark>mdi-download</v-icon>
-            <download-excel :data="data">
-              Télécharger
-            </download-excel>
+            <download-excel :data="data"> Télécharger </download-excel>
           </v-btn>
           <v-divider class="mx-4" inset vertical></v-divider>
-          
+
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
@@ -59,6 +85,14 @@
                     </template>
                   </v-row>
 
+                  <v-row>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field
+                        v-model="editedItem.num_dossier"
+                        label="Numéro dossier"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
                   <v-row>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
@@ -179,6 +213,14 @@
 import Vue from "vue";
 import JsonExcel from "vue-json-excel";
 Vue.component("downloadExcel", JsonExcel);
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const avatars = [
+  "?accessoriesType=Blank&avatarStyle=Circle&clotheColor=PastelGreen&clotheType=ShirtScoopNeck&eyeType=Wink&eyebrowType=UnibrowNatural&facialHairColor=Black&facialHairType=MoustacheMagnum&hairColor=Platinum&mouthType=Concerned&skinColor=Tanned&topType=Turban",
+  "?accessoriesType=Sunglasses&avatarStyle=Circle&clotheColor=Gray02&clotheType=ShirtScoopNeck&eyeType=EyeRoll&eyebrowType=RaisedExcited&facialHairColor=Red&facialHairType=BeardMagestic&hairColor=Red&hatColor=White&mouthType=Twinkle&skinColor=DarkBrown&topType=LongHairBun",
+  "?accessoriesType=Prescription02&avatarStyle=Circle&clotheColor=Black&clotheType=ShirtVNeck&eyeType=Surprised&eyebrowType=Angry&facialHairColor=Blonde&facialHairType=Blank&hairColor=Blonde&hatColor=PastelOrange&mouthType=Smile&skinColor=Black&topType=LongHairNotTooLong",
+  "?accessoriesType=Round&avatarStyle=Circle&clotheColor=PastelOrange&clotheType=Overall&eyeType=Close&eyebrowType=AngryNatural&facialHairColor=Blonde&facialHairType=Blank&graphicType=Pizza&hairColor=Black&hatColor=PastelBlue&mouthType=Serious&skinColor=Light&topType=LongHairBigHair",
+  "?accessoriesType=Kurt&avatarStyle=Circle&clotheColor=Gray01&clotheType=BlazerShirt&eyeType=Surprised&eyebrowType=Default&facialHairColor=Red&facialHairType=Blank&graphicType=Selena&hairColor=Red&hatColor=Blue02&mouthType=Twinkle&skinColor=Pale&topType=LongHairCurly",
+];
 export default {
   data() {
     return {
@@ -188,6 +230,12 @@ export default {
       sexe: ["M", "F"],
       entreprise: [],
       headers: [
+        {
+          text: "Numéro dossier",
+          value: "num_dossier",
+          align: "right",
+          groupable: false,
+        },
         { text: "Prénom", value: "prenom", align: "right", groupable: false },
         { text: "Nom", value: "nom", align: "right", groupable: false },
         { text: "PostNom", value: "postnom", align: "right", groupable: false },
@@ -223,14 +271,35 @@ export default {
       defaultItem: {
         nom: "",
       },
+
+      active: [],
+      avatar: null,
+      open: [],
+      users: [],
     };
   },
   component: {
-    JsonExcel
+    JsonExcel,
   },
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "Ajouter" : "Editer";
+    },
+
+    items() {
+      return [
+        {
+          name: "Entreprises",
+          children: this.entreprise,
+        },
+      ];
+    },
+    selected() {
+      if (!this.active.length) return undefined;
+
+      const id = this.active[0];
+
+      return this.users.find((user) => user.id === id);
     },
   },
 
@@ -247,6 +316,19 @@ export default {
     this.initialize();
   },
   methods: {
+    async fetchUsers(item) {
+      // Remove in 6 months and say
+      // you've made optimizations! :)
+      await pause(1500);
+
+      return fetch("https://jsonplaceholder.typicode.com/users")
+        .then((res) => res.json())
+        .then((json) => item.children.push(...json))
+        .catch((err) => console.warn(err));
+    },
+    randomAvatar() {
+      this.avatar = avatars[Math.floor(Math.random() * avatars.length)];
+    },
     initialize() {
       const options = {
         headers: {
@@ -370,6 +452,7 @@ export default {
             localisation: this.editedItem.localisation,
             entreprise: this.editedItem.entreprise_id,
             matricule: this.editedItem.num_id,
+            num_dossier: this.editItem.num_dossier,
           }),
         };
         fetch(`/client/`, options)
@@ -402,8 +485,9 @@ export default {
             sexe: this.editedItem.sexe,
             date_naissance: this.editedItem.date_naissance,
             localisation: this.editedItem.localisation,
-            entreprise: this.editedItem.entreprise,
+            entreprise: this.editedItem.entreprise_id,
             matricule: this.editedItem.matricule,
+            num_dossier: this.editItem.num_dossier,
           }),
         };
         fetch(`/client/`, options)

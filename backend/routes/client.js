@@ -10,7 +10,6 @@ const Client = require('../modules/Client')
 const path = require('path')
 const Utils = require('../utils/Utils')
 const auth = require('../middleware/auth')
-const conf = require('../config/conf')
 const { config } = require('process')
 
 router.get('/',auth, (req,res)=>{
@@ -51,7 +50,7 @@ router.get('/relation', (req,res)=>{
 })
 
 router.post('/',auth, (req,res)=>{
-
+    console.log("POSTING")
     let prenom = req.body.prenom
     let nom = req.body.nom
     let postnom = req.body.postnom
@@ -60,11 +59,12 @@ router.post('/',auth, (req,res)=>{
     let localisation = req.body.localisation
     let photo = ""
     let num_id = req.body.matricule || null
+    let num_dossier = req.body.num_dossier
     let entreprise = req.body.entreprise || null
     let parent = req.body.parent || 0
     let relation = req.body.relation || "Agent"
     Client.create(prenom,nom,postnom,sexe,date_naissance,photo,
-        localisation,num_id,entreprise,parent,relation)
+        localisation,num_id,num_dossier,entreprise,parent,relation)
         .then(data =>{ 
             res.status(200).json({count: data.affectedRows})
     })
@@ -80,10 +80,11 @@ router.put('/',auth, (req,res)=>{
     let date_naissance = req.body.date_naissance
     let localisation = req.body.localisation
     let num_id = req.body.matricule || null
+    let num_dossier = req.body.num_dossier
     let entreprise = req.body.entreprise || null
 
     Client.update(id,prenom,nom,postnom,sexe,date_naissance,
-                            localisation,num_id,entreprise)
+                            localisation,num_id,num_dossier,entreprise)
             .then(data =>{
                 res.status(200).json({count: data.affectedRows})
     })

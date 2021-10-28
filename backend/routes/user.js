@@ -25,14 +25,14 @@ router.get('/role', (req, res) => {
 
 router.post('/', auth, (req, res) => {
     console.log("POST new User")
-    const { login, nom, role } = req.body
+    const { login, nom, role,entreprise } = req.body
     //Check if login exist
     User.findByLogin(login).then(data => {
         let user = data.rows[0]
         if (user)
             res.status(409).send("Le login existe déjà dans le système");
     })
-    User.create(login, nom, role).then(data => {
+    User.create(login, nom, role,entreprise).then(data => {
         res.status(200).json({ count: data.rowCount })
     })
 })
@@ -58,7 +58,7 @@ router.post('/auth',  (req, res) => {
                 conf.TOKEN_KEY,
                 {
                     expiresIn: "2h",
-                }
+                },
             )
         }
         let user
@@ -68,7 +68,8 @@ router.post('/auth',  (req, res) => {
                 login: _user.login,
                 nom: _user.nom,
                 role: _user.role,
-                token: token
+                token: token,
+                entreprise: _user.entreprise
             }
         }
         console.log(user)
@@ -93,7 +94,6 @@ router.put('/', (req, res) => {
     let role = req.body.role || ''
     let password = req.body.password || ''
     let status = req.body.status || ''
-
     console.log(req.body)
     let data
     if (password !== '') {
@@ -121,9 +121,5 @@ router.put('/', (req, res) => {
     }
 
 })
-
-router.get("/logout", function (req, res) {
-
-});
 
 module.exports = router
