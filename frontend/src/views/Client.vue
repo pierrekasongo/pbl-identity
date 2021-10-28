@@ -1,234 +1,278 @@
 <template>
   <v-card>
-    <v-card-title>
-      <v-toolbar flat>
-        <v-toolbar-title>Filtrer par entreprise</v-toolbar-title>
-        <v-divider class="mx-4" inset vertical></v-divider>
-      </v-toolbar>
-    </v-card-title>
+    <v-row>
+      <v-col
+        style="max-width: 300px"
+        v-if="role == 'Admin' || role == 'Encodeur'"
+      >
+        <v-row class="pa-2" justify="space-between">
+          <v-col>
+            <v-sheet class="pa-4 primary lighten">
+              <v-text-field
+                v-model="searchStructure"
+                label="Chercher entreprise"
+                dark
+                flat
+                solo-inverted
+                hide-details
+                clearable
+                clear-icon="mdi-close-circle-outline"
+              ></v-text-field>
+             
+            </v-sheet>
+            <v-treeview
+              v-model="selectedStructure"
+              :active.sync="active"
+              :items="items"
+              :search="searchStructure"
+              :filter="filter"
+              :load-children="fetchStructure"
+              :open.sync="open"
+              activatable
+              color="warning"
+              open-on-click
+              transition
+              @update:active="onSelect"
+            >
+              <template v-slot:prepend="{ item }">
+                <v-icon v-if="!item.children"> mdi-domain </v-icon>
+              </template>
+            </v-treeview>
+          </v-col>
+        </v-row>
+      </v-col>
 
-    <v-card-title>
-      <v-row class="pa-4" justify="space-between">
-        <v-col cols="5">
-          <v-treeview
-            :active.sync="active"
-            :items="items"
-            :load-children="fetchUsers"
-            :open.sync="open"
-            activatable
-            color="warning"
-            open-on-click
-            transition
-          >
-            <template v-slot:prepend="{ item }">
-              <v-icon v-if="!item.children"> mdi-account </v-icon>
-            </template>
-          </v-treeview>
-        </v-col>
-      </v-row>
-    </v-card-title>
+      <v-col>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Filtrer"
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-card-title>
 
-    <v-card-title>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
-    </v-card-title>
-
-    <v-data-table
-      :headers="headers"
-      :items="data"
-      :search="search"
-      :loading="!data.length"
-      loading-text="En cours de chargement..."
-      group-by="entreprise"
-      class="elevation-1"
-      show-group-by
-    >
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>Liste des abonnés</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-btn color="secondary" dark class="mb-2">
-            <v-icon dark>mdi-download</v-icon>
-            <download-excel :data="data"> Télécharger </download-excel>
-          </v-btn>
-          <v-divider class="mx-4" inset vertical></v-divider>
-
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                Ajouter
+        <v-data-table
+          v-model="filtered"
+          :headers="headers"
+          :items="filtered"
+          :search="search"
+          :loading="!data.length"
+          loading-text="En cours de chargement..."
+          class="elevation-1"
+          show-group-by
+        >
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title>Liste des abonnés</v-toolbar-title>
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+              <v-btn color="secondary" dark class="mb-2">
+                <v-icon dark>mdi-download</v-icon>
+                <download-excel :data="data"> Télécharger </download-excel>
               </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ formTitle }}</span>
-              </v-card-title>
+              <v-divider class="mx-4" inset vertical></v-divider>
 
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <template v-if="editedIndex > -1">
-                      <v-col cols="12" sm="6" md="4">
-                        <img
-                          :src="`/uploads/${editedItem.photo}`"
-                          alt=""
-                          width="50"
-                          height="50"
-                        />
-                      </v-col>
-                    </template>
-                  </v-row>
+              <v-dialog v-model="dialog" max-width="500px">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="mb-2"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    Ajouter
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title>
+                    <span class="text-h5">{{ formTitle }}</span>
+                  </v-card-title>
 
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.num_dossier"
-                        label="Numéro dossier"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.prenom"
-                        label="Prénom"
-                      ></v-text-field>
-                    </v-col>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <template v-if="editedIndex > -1">
+                          <v-col cols="12" sm="6" md="4">
+                            <img
+                              :src="`/uploads/${editedItem.photo}`"
+                              alt=""
+                              width="50"
+                              height="50"
+                            />
+                          </v-col>
+                        </template>
+                      </v-row>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.nom"
-                        label="Nom"
-                      ></v-text-field>
-                    </v-col>
+                      <v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            v-model="editedItem.num_dossier"
+                            label="Numéro dossier"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            v-model="editedItem.prenom"
+                            label="Prénom"
+                          ></v-text-field>
+                        </v-col>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.postnom"
-                        label="Postnom"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            v-model="editedItem.nom"
+                            label="Nom"
+                          ></v-text-field>
+                        </v-col>
 
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.date_naissance"
-                        label="Date de naissance"
-                      ></v-text-field>
-                    </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            v-model="editedItem.postnom"
+                            label="Postnom"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-combobox
-                        v-model="editedItem.sexe"
-                        :items="sexe"
-                        label="Sexe"
-                      ></v-combobox>
-                    </v-col>
+                      <v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-menu
+                            v-model="menu2"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="auto"
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-text-field
+                                v-model="dateFormatted"
+                                label="Date"
+                                hint="MM/DD/YYYY format"
+                                persistent-hint
+                                prepend-icon="mdi-calendar"
+                                v-bind="attrs"
+                                @blur="date = parseDate(dateFormatted)"
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-date-picker
+                              v-model="date"
+                              no-title
+                              @input="menu1 = false"
+                            ></v-date-picker>
+                          </v-menu>
+                        </v-col>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.localisation"
-                        label="Localisation"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-combobox
+                            v-model="editedItem.sexe"
+                            :items="sexe"
+                            label="Sexe"
+                          ></v-combobox>
+                        </v-col>
 
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        label="Entreprise"
-                        v-model="editedItem.entreprise_id"
-                        :items="entreprise"
-                        item-text="nom"
-                        item-value="id"
-                        return-object
-                      ></v-select>
-                    </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            v-model="editedItem.localisation"
+                            label="Localisation"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItem.num_id"
-                        label="Matricule"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
+                      <v-row>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-select
+                            label="Entreprise"
+                            v-model="editedItem.entreprise_id"
+                            :items="entreprise"
+                            item-text="nom"
+                            item-value="id"
+                            return-object
+                          ></v-select>
+                        </v-col>
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Annuler
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="save">
-                  Valider
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+                        <v-col cols="12" sm="6" md="4">
+                          <v-text-field
+                            v-model="editedItem.num_id"
+                            label="Matricule"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-card-text>
 
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5"
-                >Voulez-vous vraiment supprimer cet
-                enregistrement?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Annuler</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="close">
+                      Annuler
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="save">
+                      Valider
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
 
-        <v-icon small class="mr-2" @click="handleRowClick(item)">
-          mdi-eye
-        </v-icon>
+              <v-dialog v-model="dialogDelete" max-width="500px">
+                <v-card>
+                  <v-card-title class="text-h5"
+                    >Voulez-vous vraiment supprimer cet
+                    enregistrement?</v-card-title
+                  >
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="closeDelete"
+                      >Annuler</v-btn
+                    >
+                    <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                      >OK</v-btn
+                    >
+                    <v-spacer></v-spacer>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-toolbar>
+          </template>
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-icon small class="mr-2" @click="editItem(item)">
+              mdi-pencil
+            </v-icon>
 
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-      </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize"> Reset </v-btn>
-      </template>
-    </v-data-table>
+            <v-icon small class="mr-2" @click="handleRowClick(item)">
+              mdi-eye
+            </v-icon>
+
+            <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+          </template>
+          <template v-slot:no-data>
+            <v-btn color="primary" @click="initialize"> Reset </v-btn>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 <script>
 import Vue from "vue";
 import JsonExcel from "vue-json-excel";
 Vue.component("downloadExcel", JsonExcel);
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const avatars = [
-  "?accessoriesType=Blank&avatarStyle=Circle&clotheColor=PastelGreen&clotheType=ShirtScoopNeck&eyeType=Wink&eyebrowType=UnibrowNatural&facialHairColor=Black&facialHairType=MoustacheMagnum&hairColor=Platinum&mouthType=Concerned&skinColor=Tanned&topType=Turban",
-  "?accessoriesType=Sunglasses&avatarStyle=Circle&clotheColor=Gray02&clotheType=ShirtScoopNeck&eyeType=EyeRoll&eyebrowType=RaisedExcited&facialHairColor=Red&facialHairType=BeardMagestic&hairColor=Red&hatColor=White&mouthType=Twinkle&skinColor=DarkBrown&topType=LongHairBun",
-  "?accessoriesType=Prescription02&avatarStyle=Circle&clotheColor=Black&clotheType=ShirtVNeck&eyeType=Surprised&eyebrowType=Angry&facialHairColor=Blonde&facialHairType=Blank&hairColor=Blonde&hatColor=PastelOrange&mouthType=Smile&skinColor=Black&topType=LongHairNotTooLong",
-  "?accessoriesType=Round&avatarStyle=Circle&clotheColor=PastelOrange&clotheType=Overall&eyeType=Close&eyebrowType=AngryNatural&facialHairColor=Blonde&facialHairType=Blank&graphicType=Pizza&hairColor=Black&hatColor=PastelBlue&mouthType=Serious&skinColor=Light&topType=LongHairBigHair",
-  "?accessoriesType=Kurt&avatarStyle=Circle&clotheColor=Gray01&clotheType=BlazerShirt&eyeType=Surprised&eyebrowType=Default&facialHairColor=Red&facialHairType=Blank&graphicType=Selena&hairColor=Red&hatColor=Blue02&mouthType=Twinkle&skinColor=Pale&topType=LongHairCurly",
-];
+
 export default {
   data() {
     return {
+      role: "",
       search: "",
+      searchStructure: null,
       dialog: false,
       dialogDelete: false,
       sexe: ["M", "F"],
       entreprise: [],
+      structures: [],
+      selectedStructure:[],
       headers: [
         {
           text: "Numéro dossier",
@@ -252,7 +296,12 @@ export default {
           align: "right",
           groupable: false,
         },
-        { text: "Entreprise", value: "entreprise", align: "right" },
+        {
+          text: "Entreprise",
+          value: "entreprise",
+          align: "right",
+          groupable: false,
+        },
         {
           text: "Matricule",
           value: "num_id",
@@ -262,6 +311,7 @@ export default {
         { text: "Actions", value: "actions", sortable: false },
       ],
       data: [],
+      filtered:[],
 
       editedIndex: -1,
       editedItem: {
@@ -273,15 +323,33 @@ export default {
       },
 
       active: [],
-      avatar: null,
       open: [],
-      users: [],
+
+      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10),
+      dateFormatted: this.formatDate(
+        new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+          .toISOString()
+          .substr(0, 10)
+      ),
+      menu1: false,
+      menu2: false,
     };
   },
   component: {
     JsonExcel,
   },
   computed: {
+    filterData(){
+      
+    },
+    filter () {
+        return (item, searchStructure, textKey) => item[textKey].indexOf(searchStructure) > -1
+    },
+    computedDateFormatted() {
+      return this.formatDate(this.date);
+    },
     formTitle() {
       return this.editedIndex === -1 ? "Ajouter" : "Editer";
     },
@@ -290,20 +358,27 @@ export default {
       return [
         {
           name: "Entreprises",
-          children: this.entreprise,
+          children: this.structures,
         },
       ];
-    },
-    selected() {
-      if (!this.active.length) return undefined;
-
-      const id = this.active[0];
-
-      return this.users.find((user) => user.id === id);
     },
   },
 
   watch: {
+    active:{
+      handler(value){
+        if (!this.active.length)
+          this.filtered = [...this.data]
+        else{
+          let d = [...this.data]
+          this.filtered = d.filter(d => d.entreprise_id == value)
+        }
+        
+      }
+    },
+    date(val) {
+      this.dateFormatted = this.formatDate(this.date);
+    },
     dialog(val) {
       this.loadEntreprise();
       val || this.close();
@@ -316,15 +391,29 @@ export default {
     this.initialize();
   },
   methods: {
-    async fetchUsers(item) {
-      // Remove in 6 months and say
-      // you've made optimizations! :)
-      await pause(1500);
+    formatDate(date) {
+      if (!date) return null;
 
-      return fetch("https://jsonplaceholder.typicode.com/users")
-        .then((res) => res.json())
-        .then((json) => item.children.push(...json))
-        .catch((err) => console.warn(err));
+      const [year, month, day] = date.split("-");
+      return `${day}/${month}/${year}`;
+    },
+    parseDate(date) {
+      if (!date) return null;
+
+      const [day,month, year] = date.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    },
+    onSelect(selected){
+      //this.data.find(d => d.entreprise_id == selected)
+    },
+    async fetchStructure(item) {
+      let st = await this.loadEntreprise();
+      st.forEach((e) => {
+        item.children.push({
+          id: e.id,
+          name: e.nom,
+        });
+      });
     },
     randomAvatar() {
       this.avatar = avatars[Math.floor(Math.random() * avatars.length)];
@@ -345,18 +434,19 @@ export default {
         .then((data) => {
           console.log("CLIENT ", data);
           this.data = data;
+          this.filtered = data;
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    loadEntreprise() {
+    async loadEntreprise() {
       const options = {
         headers: {
           "x-access-token": "Bearer " + localStorage.getItem("token"),
         },
       };
-      fetch("/entreprise/", options)
+      return fetch("/entreprise/", options)
         .then((resp) => {
           console.log("ENTREPRISES");
           if (resp.status == 401) {
@@ -366,6 +456,7 @@ export default {
         .then((data) => {
           console.log("Entreprises ", data);
           this.entreprise = data;
+          return data;
         })
         .catch((err) => {
           console.log(err);
@@ -511,6 +602,7 @@ export default {
     },
   },
   created: function () {
+    this.role = localStorage.getItem("role");
     this.initialize();
   },
 };
