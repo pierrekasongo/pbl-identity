@@ -4,14 +4,16 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
+  state: { 
+    
     user: {
-      loggedin: false,
       id:0,
       nom : "",
       role : "",
       token : "",
-      login: ""
+      login: "",
+      entreprise:"",
+      loggedin: false,
     },
   },
   mutations: {
@@ -22,6 +24,8 @@ export default new Vuex.Store({
       state.user.role = user.role
       state.user.token = user.token
       state.user.login = user.login
+      state.user.entreprise = user.entreprise,
+      state.user.loggedin = user.loggedin,
       console.log("STATE ", state.user)
     },
     logout( state ) {
@@ -32,6 +36,8 @@ export default new Vuex.Store({
       state.user.role = ""
       state.user.token = ""
       state.user.login = ""
+      state.user.entreprise = ""
+      state.user.loggedin = false
       localStorage.clear()
     },
   },

@@ -98,7 +98,14 @@ const client = {
     findByCompany: (company) => {
         return new Promise(function (resolve, reject) {
             try {
-                const req = `SELECT * FROM client WHERE entreprise = ?`
+                console.log("Comp ",company)
+                const req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,sexe,
+                                DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_naissance,photo,
+                                localisation,num_id,num_dossier,ent.id AS entreprise_id,ent.nom AS entreprise 
+                                FROM client cl, entreprise ent
+                                WHERE cl.entreprise = ? 
+                                AND parent = 0
+                                AND cl.entreprise = ent.id`
                 db.query(req, [company], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)

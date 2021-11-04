@@ -7,7 +7,7 @@
     "SALT":"abc123XYZ",
     "TOKEN_KEY":"abceqklho$qoe",
     "RELATION":["Agent","Epoux","Epouse", "Enfant"],
-    "ROLE":["Admin","Encodeur"],
+    "ROLE":["Admin","Encodeur", "Gestionnaire"],
     "DISPATCH_PATH":"../dispatch/",
     "UPLOADS_PATH":"public/uploads/"
 }

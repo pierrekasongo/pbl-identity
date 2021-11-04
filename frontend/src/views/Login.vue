@@ -17,6 +17,7 @@
                 <br />
                 <v-form>
                   <v-text-field
+                    required
                     v-model="username"
                     label="Login"
                     type="text"
@@ -24,7 +25,9 @@
                   >
                   </v-text-field>
                   <v-text-field
+                    required
                     v-model="password"
+                    v-on:keyup.enter="login()"
                     label="Mot de passe"
                     type="password"
                     :rule="passwordRules"
@@ -46,8 +49,13 @@
 </template>
 <script>
 import axios from "axios";
+import { required } from "vuelidate/lib/validators";
 export default {
   name: "Login",
+  validations: {
+    username: { required },
+    password: { required },
+  },
   data() {
     return {
       valid: true,
@@ -61,7 +69,21 @@ export default {
     };
   },
   created: function () {
-    this.$store.commit("logout");
+    //this.$store.commit("logout");
+  },
+  computed: {
+    /*usernameErrors () {
+      const errors = []
+      if (!this.$v.username.$dirty) return errors
+      !this.$v.username.required && errors.push('Login requis')
+      return errors
+    },
+    passwordErrors () {
+      const errors = []
+      if (!this.$v.password.$dirty) return errors
+      !this.$v.password.required && errors.push('Mot de passe requis')
+      return errors
+    }*/
   },
   methods: {
     validate() {
@@ -90,8 +112,10 @@ export default {
           localStorage.setItem("nom", user.nom);
           localStorage.setItem("role", user.role);
           localStorage.setItem("token", user.token);
-          user.loggedin = true
-          this.$router.push("/client");
+          localStorage.setItem("entreprise", user.entreprise);
+          this.$store.state.user = user
+          //this.$store.state.loggedin = true;
+          this.$router.push("/");
         })
         .catch((err) => {
           console.log(err.message);

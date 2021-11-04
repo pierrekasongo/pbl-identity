@@ -54,12 +54,13 @@ export default {
           { title: 'Changer mot de passe', icon: 'mdi-key', to:'/compte',role:'*'},
           { title: 'Utilisateurs', icon: 'mdi-account-cog', to:'/user',role:'Admin'},
           { title: 'Sauvegarde', icon: 'mdi-backup-restore', to:'/sauvegarde',role:'*'},
-          { title: 'Déconnexion', icon: 'mdi-logout', to:'/login',role:'*'},
+          { title: 'Déconnexion', icon: 'mdi-logout', to:'/logout',role:'*'},
         ],
         right: null,
       }),
-      created:function(){
-        const role = localStorage.getItem("role")
+      beforeCreate:function(){
+        const role = this.$store.state.user.role
+        console.log("Role ",role)
         this.items = this.items.filter(v => v.role == role  ||  v.role == '*')
       }
 }

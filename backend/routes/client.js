@@ -10,7 +10,6 @@ const Client = require('../modules/Client')
 const path = require('path')
 const Utils = require('../utils/Utils')
 const auth = require('../middleware/auth')
-const { config } = require('process')
 
 router.get('/',auth, (req,res)=>{
     console.log("Get all Clients")
@@ -26,6 +25,15 @@ router.get('/:id',auth, (req,res)=>{
     Client.find(clientId).then(data =>{
         console.log("Client ", data)
         res.status(200).json(data[0])
+    })
+})
+
+router.get('/by_entreprise/:entreprise_id',auth, (req,res)=>{
+    console.log("Get clients by company ",req.params.entreprise_id)
+    const entreprise_id = req.params.entreprise_id
+    Client.findByCompany(entreprise_id).then(data =>{
+        console.log("Client ", data)
+        res.status(200).json(data)
     })
 })
 

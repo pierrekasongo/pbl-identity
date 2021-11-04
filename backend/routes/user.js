@@ -69,7 +69,8 @@ router.post('/auth',  (req, res) => {
                 nom: _user.nom,
                 role: _user.role,
                 token: token,
-                entreprise: _user.entreprise
+                entreprise: _user.entreprise,
+                loggedin:true
             }
         }
         console.log(user)

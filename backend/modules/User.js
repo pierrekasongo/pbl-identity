@@ -49,12 +49,12 @@ const user = {
             }
         })
     },
-    create: (login, nom, role) => {
+    create: (login, nom, role, entreprise) => {
         return new Promise(function (resolve, reject) {
             try {
                 const req = `INSERT INTO utilisateur(login,nom,role,status,entreprise) VALUES(?,?,?,?,?)`
                 db.query(req, [
-                    login, nom, role, 'Actif'
+                    login, nom, role, 'Actif', entreprise
                 ], function (err, result, fields) {
                     if (err) throw err;
                     resolve(result)

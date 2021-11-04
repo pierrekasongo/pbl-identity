@@ -3,7 +3,7 @@
     <v-row>
       <v-col
         style="max-width: 300px"
-        v-if="role == 'Admin' || role == 'Encodeur'"
+        v-if="role == 'Admin' || role == 'Gestionnaire'"
       >
         <v-row class="pa-2" justify="space-between">
           <v-col>
@@ -18,7 +18,6 @@
                 clearable
                 clear-icon="mdi-close-circle-outline"
               ></v-text-field>
-             
             </v-sheet>
             <v-treeview
               v-model="selectedStructure"
@@ -47,7 +46,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Filtrer"
+            label="Rechercher"
             single-line
             hide-details
           ></v-text-field>
@@ -272,7 +271,7 @@ export default {
       sexe: ["M", "F"],
       entreprise: [],
       structures: [],
-      selectedStructure:[],
+      selectedStructure: [],
       headers: [
         {
           text: "Numéro dossier",
@@ -311,7 +310,7 @@ export default {
         { text: "Actions", value: "actions", sortable: false },
       ],
       data: [],
-      filtered:[],
+      filtered: [],
 
       editedIndex: -1,
       editedItem: {
@@ -341,11 +340,10 @@ export default {
     JsonExcel,
   },
   computed: {
-    filterData(){
-      
-    },
-    filter () {
-        return (item, searchStructure, textKey) => item[textKey].indexOf(searchStructure) > -1
+    filterData() {},
+    filter() {
+      return (item, searchStructure, textKey) =>
+        item[textKey].indexOf(searchStructure) > -1;
     },
     computedDateFormatted() {
       return this.formatDate(this.date);
@@ -365,16 +363,14 @@ export default {
   },
 
   watch: {
-    active:{
-      handler(value){
-        if (!this.active.length)
-          this.filtered = [...this.data]
-        else{
-          let d = [...this.data]
-          this.filtered = d.filter(d => d.entreprise_id == value)
+    active: {
+      handler(value) {
+        if (!this.active.length) this.filtered = [...this.data];
+        else {
+          let d = [...this.data];
+          this.filtered = d.filter((d) => d.entreprise_id == value);
         }
-        
-      }
+      },
     },
     date(val) {
       this.dateFormatted = this.formatDate(this.date);
@@ -400,10 +396,10 @@ export default {
     parseDate(date) {
       if (!date) return null;
 
-      const [day,month, year] = date.split("/");
+      const [day, month, year] = date.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     },
-    onSelect(selected){
+    onSelect(selected) {
       //this.data.find(d => d.entreprise_id == selected)
     },
     async fetchStructure(item) {
@@ -419,12 +415,16 @@ export default {
       this.avatar = avatars[Math.floor(Math.random() * avatars.length)];
     },
     initialize() {
+      let endpoint =
+        localStorage.getItem("role") == "Encodeur"
+          ? `/client/by_entreprise/${localStorage.getItem("entreprise")}`
+          : `/client/`;
       const options = {
         headers: {
           "x-access-token": "Bearer " + localStorage.getItem("token"),
         },
       };
-      fetch("/client/", options)
+      fetch(endpoint, options)
         .then((resp) => {
           console.log("RESPONSE ", resp);
           if (resp.status == 401) {
@@ -601,6 +601,9 @@ export default {
       this.close();
     },
   },
+  /*mounted:function(){
+    this.$router.go()
+  },*/
   created: function () {
     this.role = localStorage.getItem("role");
     this.initialize();
