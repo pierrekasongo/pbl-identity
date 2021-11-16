@@ -75,6 +75,56 @@
         sm="6"
         md="4"
       >
+          Prénom: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        {{client.prenom}}
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+          Nom: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        {{client.nom}}
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+          Postnom: 
+      </v-col>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
+        {{client.postnom}}
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col 
+        cols="12"
+        sm="6"
+        md="4"
+      >
           Sexe: 
       </v-col>
       <v-col 
@@ -137,23 +187,6 @@
         
       </v-col>
     </v-row>
-
-    <v-row>
-      <v-col 
-        cols="12"
-        sm="6"
-        md="4"
-      >
-        Matricule: 
-      </v-col>
-      <v-col 
-        cols="12"
-        sm="6"
-        md="4"
-      >{{client.num_id}}
-
-      </v-col>
-    </v-row>
   </v-card>
 </template>
 
@@ -171,7 +204,7 @@
       gotoUpload:function(){
         this.$router.push({
           name: 'upload',
-          params: {client: this.client.id}
+          params: {client: this.client.id, isParent:true}
         })
       }
     },
@@ -194,7 +227,6 @@
         this.loading = false
       }).catch(err => {
           console.log(err)
-          this.$route.push('/login')
       })
     },
 

@@ -32,7 +32,7 @@ router.post('/', auth, (req, res) => {
 router.get('/', auth, (req, res) => {
     console.log("List all dispatches...")
     let files = []
-    fs.readdir(conf.DISPATCH_PATH, function (err, _files) {
+    fs.readdir(__dirname+'/../'+conf.DISPATCH_PATH, function (err, _files) {
         if (err) {
             console.log("Unable to scan directory: " + err)
             return null

@@ -4,9 +4,11 @@
   "description": "PBL idendity backend",
   "main": "app.js",
   "scripts": {
-    "start": "electron main.js",
+    "start": "electron-forge start",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "author": "pierre kasongo",
   "license": "ISC",
@@ -14,7 +16,6 @@
     "child_process": "^1.0.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "electron": "^15.2.0",
     "express": "^4.17.1",
     "express-jwt": "^6.1.0",
     "jsonwebtoken": "^8.5.1",
@@ -23,6 +24,41 @@
     "mysql-rp-dump": "^0.1.2",
     "mysql2": "^2.3.2",
     "nodemon": "^2.0.13",
+    "rpm": "0.0.0",
     "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.61",
+    "@electron-forge/maker-deb": "^6.0.0-beta.61",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.61",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.61",
+    "@electron-forge/maker-zip": "^6.0.0-beta.61"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "pbl_backend"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }

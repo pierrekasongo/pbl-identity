@@ -8,6 +8,6 @@
     "TOKEN_KEY":"abceqklho$qoe",
     "RELATION":["Agent","Epoux","Epouse", "Enfant"],
     "ROLE":["Admin","Encodeur", "Gestionnaire"],
-    "DISPATCH_PATH":"../dispatch/",
+    "DISPATCH_PATH":"public/dispatch/",
     "UPLOADS_PATH":"public/uploads/"
 }

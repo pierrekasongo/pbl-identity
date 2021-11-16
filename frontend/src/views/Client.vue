@@ -139,29 +139,36 @@
                       <v-row>
                         <v-col cols="12" sm="6" md="4">
                           <v-menu
-                            v-model="menu2"
+                            ref="menu"
+                            v-model="menu"
                             :close-on-content-click="false"
                             transition="scale-transition"
                             offset-y
-                            max-width="290px"
                             min-width="auto"
                           >
                             <template v-slot:activator="{ on, attrs }">
                               <v-text-field
-                                v-model="dateFormatted"
-                                label="Date"
-                                hint="MM/DD/YYYY format"
-                                persistent-hint
+                                v-model="formattedDate"
+                                label="Date de naissance"
                                 prepend-icon="mdi-calendar"
+                                readonly
                                 v-bind="attrs"
-                                @blur="date = parseDate(dateFormatted)"
                                 v-on="on"
                               ></v-text-field>
                             </template>
                             <v-date-picker
-                              v-model="date"
-                              no-title
-                              @input="menu1 = false"
+                              v-model="formattedDate"
+                              active-picker="YEAR"
+                              :max="
+                                new Date(
+                                  Date.now() -
+                                    new Date().getTimezoneOffset() * 60000
+                                )
+                                  .toISOString()
+                                  .substr(0, 10)
+                              "
+                              min="1750-01-01"
+                              @change="saveDate"
                             ></v-date-picker>
                           </v-menu>
                         </v-col>
@@ -263,6 +270,7 @@ Vue.component("downloadExcel", JsonExcel);
 export default {
   data() {
     return {
+      menu: false,
       role: "",
       search: "",
       searchStructure: null,
@@ -323,8 +331,9 @@ export default {
 
       active: [],
       open: [],
+      formattedDate:''
 
-      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      /*date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
       dateFormatted: this.formatDate(
@@ -333,7 +342,7 @@ export default {
           .substr(0, 10)
       ),
       menu1: false,
-      menu2: false,
+      menu2: false,*/
     };
   },
   component: {
@@ -345,9 +354,9 @@ export default {
       return (item, searchStructure, textKey) =>
         item[textKey].indexOf(searchStructure) > -1;
     },
-    computedDateFormatted() {
+    /*computedDateFormatted() {
       return this.formatDate(this.date);
-    },
+    },*/
     formTitle() {
       return this.editedIndex === -1 ? "Ajouter" : "Editer";
     },
@@ -372,9 +381,9 @@ export default {
         }
       },
     },
-    date(val) {
+    /*date(val) {
       this.dateFormatted = this.formatDate(this.date);
-    },
+    },*/
     dialog(val) {
       this.loadEntreprise();
       val || this.close();
@@ -387,7 +396,10 @@ export default {
     this.initialize();
   },
   methods: {
-    formatDate(date) {
+    saveDate(date) {
+      this.$refs.menu.save(date);
+    },
+    /*formatDate(date) {
       if (!date) return null;
 
       const [year, month, day] = date.split("-");
@@ -398,7 +410,7 @@ export default {
 
       const [day, month, year] = date.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    },
+    },*/
     onSelect(selected) {
       //this.data.find(d => d.entreprise_id == selected)
     },
@@ -455,7 +467,10 @@ export default {
         })
         .then((data) => {
           console.log("Entreprises ", data);
-          this.entreprise = data;
+          this.entreprise =
+            this.$store.state.user.role.toLowerCase() == "encodeur"
+              ? data.filter((e) => e.id == this.$store.state.user.entreprise)
+              : data;
           return data;
         })
         .catch((err) => {
@@ -469,6 +484,8 @@ export default {
     editItem(item) {
       this.loadEntreprise();
       this.editedIndex = this.data.indexOf(item);
+      let d = item.date_naissance.split('-')
+      this.formattedDate = d[2]+'-'+d[1]+'-'+d[0]
       this.editedItem = Object.assign({}, item);
       console.log(item);
       this.dialog = true;
@@ -511,6 +528,7 @@ export default {
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
+        this.formattedDate = '';
       });
     },
 
@@ -539,7 +557,7 @@ export default {
             nom: this.editedItem.nom,
             postnom: this.editedItem.postnom,
             sexe: this.editedItem.sexe,
-            date_naissance: this.editedItem.date_naissance,
+            date_naissance: this.formattedDate,
             localisation: this.editedItem.localisation,
             entreprise: this.editedItem.entreprise_id,
             matricule: this.editedItem.num_id,

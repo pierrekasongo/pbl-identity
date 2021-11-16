@@ -48,20 +48,24 @@ export default {
       role:'',
       items: [
           /*{ title: 'Acceuil', icon: 'mdi-view-home', to:'/'},*/
-          { title: 'Abonnés', icon: 'mdi-account-group-outline', to:'/client',role:'*'},
-          { title: 'Visites', icon: 'mdi-hospital', to:'/visite-page',role:'*'},
-          { title: 'Entreprises', icon: 'mdi-domain', to:'/entreprise',role:'Admin'},
-          { title: 'Changer mot de passe', icon: 'mdi-key', to:'/compte',role:'*'},
-          { title: 'Utilisateurs', icon: 'mdi-account-cog', to:'/user',role:'Admin'},
-          { title: 'Sauvegarde', icon: 'mdi-backup-restore', to:'/sauvegarde',role:'*'},
-          { title: 'Déconnexion', icon: 'mdi-logout', to:'/logout',role:'*'},
+          { title: 'Abonnés', icon: 'mdi-account-group-outline', to:'/client',role:['*']},
+          { title: 'Visites', icon: 'mdi-hospital', to:'/visite-page',role:['Admin','Gestionnaire']},
+          { title: 'Entreprises', icon: 'mdi-domain', to:'/entreprise',role:['Admin']},
+          { title: 'Changer mot de passe', icon: 'mdi-key', to:'/compte',role:['*']},
+          { title: 'Utilisateurs', icon: 'mdi-account-cog', to:'/user',role:['Admin']},
+          { title: 'Sauvegarde', icon: 'mdi-backup-restore', to:'/sauvegarde',role:['*']},
+          { title: 'Déconnexion', icon: 'mdi-logout', to:'/logout',role:['*']},
         ],
         right: null,
       }),
-      beforeCreate:function(){
-        const role = this.$store.state.user.role
+      created:function(){
+        
+      },
+      beforeMount:function(){
+        console.log("Before mount")
+        const role = localStorage.getItem("role")//this.$store.state.user.role
         console.log("Role ",role)
-        this.items = this.items.filter(v => v.role == role  ||  v.role == '*')
+        this.items = this.items.filter(v => v.role.includes(role)  ||  v.role.includes('*'))
       }
 }
 </script>

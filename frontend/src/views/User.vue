@@ -440,7 +440,6 @@
           this.data = data
         }).catch(err => {
           console.log(err)
-          this.$route.push('/login')
         })
       },
       

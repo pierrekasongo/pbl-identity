@@ -8,7 +8,7 @@ const client = {
         return new Promise(function (resolve, reject) {
             try {
                 let req, res
-                if (id) {
+                if (id && id > 0) {
                     req = `SELECT cl.id AS id, prenom, cl.nom AS nom, postnom,
                             sexe,DATE_FORMAT(cl.date_naissance, '%d-%m-%Y') AS date_naissance,photo,
                             localisation,num_id,num_dossier,ent.nom AS entreprise 
@@ -47,6 +47,24 @@ const client = {
                     FROM client WHERE parent = ?`
                 db.query(req, [parent], function (err, result, fields) {
                     if (err) throw err;
+                    resolve(result)
+                });
+            } catch (err) {
+                console.log(err.message)
+                return reject(err)
+            }
+        })
+    },
+
+    findMemberByID: (id) => {
+        return new Promise(function (resolve, reject) {
+            try {
+                req = `SELECT id, prenom, nom, num_dossier,
+                    postnom,sexe,DATE_FORMAT(date_naissance, '%d-%m-%Y') AS date_naissance,photo,localisation,relation
+                    FROM client WHERE id = ?`
+                db.query(req, [id], function (err, result, fields) {
+                    if (err) throw err;
+                    console.log("Member ", result)
                     resolve(result)
                 });
             } catch (err) {

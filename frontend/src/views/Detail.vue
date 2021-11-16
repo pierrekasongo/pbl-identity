@@ -4,7 +4,7 @@
   <v-card>
     <v-tabs
       v-model="tabs"
-      background-color="orange lighten-2"
+      background-color="primary lighten"
       dark
     >
       <v-tab>

@@ -1,11 +1,17 @@
+<style scoped>
+.login{
+  padding: 0px 0px 0px 0px !important;
+  margin-top: 50px;
+}
+</style>
 <template>
   <v-app id="inspire">
-    <div v-show="this.$store.state.user.loggedin">
+    <div v-if="this.$store.state.user.loggedin">
       <Navigation />
       <Header />
     </div>
     <ModalIdle v-if="isIdle" />
-    <v-main>
+    <v-main class="v-main">
       <!--  -->
       <router-view></router-view>
     </v-main>
@@ -23,13 +29,13 @@ import ModalIdle from './components/ModalIdle.vue'
     Header,
     ModalIdle
   },
-    data: () => ({ 
-    }),
     computed: {
       isIdle() {
         return this.$store.state.idleVue.isIdle;
       }
     },
-
+    created:function(){
+      
+    },
   }
 </script>

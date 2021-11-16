@@ -99,6 +99,11 @@
             }).then(data =>{
                 console.log("Updated ",data.count)
                 //this.$router.back()
+                if(data.count == 0)
+                  alert("La photo n'a pas été chargée")
+                else{
+                  alert("La photo a été chargée")
+                }
                 this.$router.push({ name:"client-detail", params: {id: this.client.id} })
             }).catch(err => console.log(err.message))
       }
@@ -107,13 +112,18 @@
     created:function(){
       console.log("Params ", this.$route.params.client)
       const clientId = this.$route.params.client
+      const isParent = this.$route.params.isParent
 
       const options={
           headers:{
             'x-access-token': 'Bearer ' +localStorage.getItem("token")
           }
       }
-      fetch(`/client/${clientId}`,options).then(resp => {
+      const url = (isParent)?`/client/${clientId}`:`/famille/${clientId}`
+
+      console.log("URL ", url)
+
+      fetch(url,options).then(resp => {
           console.log("RESPONSE ",resp)
           if(resp.status == 401){
             this.$router.push('/login')
@@ -123,6 +133,7 @@
           console.log(data)
           this.previewImage = data.photo
           this.client = {
+            id: data.id,
             prenom:data.prenom,
             nom:data.nom,
             postnom:data.postnom,
@@ -130,7 +141,6 @@
           }
         }).catch(err => {
           console.log(err)
-          this.$router.push('/login')
         })
     }
   }

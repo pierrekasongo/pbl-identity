@@ -4,10 +4,12 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import IdleVue from "idle-vue";
 import store from '../store'
+import Vuelidate from 'vuelidate';
+
 
 Vue.config.productionTip = false
 const eventsHub = new Vue();
-
+Vue.use(Vuelidate)
 Vue.use(IdleVue, {
   eventEmitter: eventsHub,
   store,

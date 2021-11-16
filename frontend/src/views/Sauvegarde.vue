@@ -118,40 +118,8 @@ export default {
       console.log(this.selectedFile);
       this.dialog = true;
     },
-
-    loadConfirm() {
-      console.log("Selected ", this.selectedFile.nom);
+    initialize(){
       const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": "Bearer " + localStorage.getItem("token"),
-        },
-
-        body: JSON.stringify({ filename: this.selectedFile.nom }),
-      };
-      fetch("/database/", options)
-        .then((resp) => {
-          console.log("Generate dispatch");
-          console.log("Response ",resp)
-          if (resp.success)
-            alert(`Dispatch chargé avec succès`);
-          else alert("Le processus a echoué");
-          this.generating = false;
-        })
-        .catch((err) => {
-          console.log("ERROR ", err.message);
-        });
-      this.close();
-    },
-    watch: {
-      dialog(val) {
-        val || this.close();
-      },
-    },
-  },
-  created: function () {
-    const options = {
       headers: {
         "x-access-token": "Bearer " + localStorage.getItem("token"),
       },
@@ -169,6 +137,42 @@ export default {
       .catch((err) => {
         console.log("ERROR ", err.message);
       });
+    },
+    loadConfirm() {
+      console.log("Selected ", this.selectedFile.nom);
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": "Bearer " + localStorage.getItem("token"),
+        },
+
+        body: JSON.stringify({ filename: this.selectedFile.nom }),
+      };
+      fetch("/database/", options)
+        .then((resp) => {
+          console.log("Generate dispatch");
+          console.log("Response ",resp)
+          if (resp.success){
+            alert(`Dispatch chargé avec succès`);
+            this.initialize()
+          }
+          else alert("Le processus a echoué");
+          this.generating = false;
+        })
+        .catch((err) => {
+          console.log("ERROR ", err.message);
+        });
+      this.close();
+    },
+    watch: {
+      /*dialog(val) {
+        val || this.close();
+      },*/
+    },
+  },
+  created: function () {
+    this.initialize()
   },
 };
 </script>

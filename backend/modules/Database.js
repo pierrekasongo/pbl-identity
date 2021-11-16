@@ -3,8 +3,10 @@ const conf = require('../config/conf')
 //const mysqldump = require('mysqldump')
 const moment = require('moment')
 var MysqlTools = require('mysql-rp-dump');
-
+const fs = require('fs')
 var tool = new MysqlTools();
+const dir = __dirname+'/../'+conf.DISPATCH_PATH
+
 const database = {
     dump: () => {
         console.log("Dumping...")
@@ -13,7 +15,7 @@ const database = {
             host: conf.DB_HOST
             , user: conf.DB_USER
             , password: conf.DB_PWD
-            , dumpPath: conf.DISPATCH_PATH
+            , dumpPath: dir
             , database: conf.DB_NAME
         }, function (error, output, message, dumpFileName) {
             if (error instanceof Error) {
@@ -35,7 +37,7 @@ const database = {
             host: conf.DB_HOST
             , user: conf.DB_USER
             , password: conf.DB_PWD
-            , sqlFilePath: conf.DISPATCH_PATH+filename
+            , sqlFilePath: dir+filename
             , database: conf.DB_NAME
         }, function (error, output, message) {
             if (error instanceof Error) {
@@ -47,6 +49,7 @@ const database = {
             } else {
                 console.log("Output ",output)
                 console.log("Message ",message)
+                fs.unlinkSync(dir+filename)
                 return { success: true, filename: filename }
             }
         });
