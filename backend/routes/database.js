@@ -9,13 +9,13 @@ const auth = require('../middleware/auth')
 const conf = require('../config/conf')
 
 router.post('/', auth, (req, res) => {
-    let { filename } = req.body || ''
-    if (filename === '') {
+    let { filename } = req.body.filename || ''
+    console.log("Filename ",filename)
+    if (filename == undefined) {
         console.log("Backup database...")
         let rp = Database.dump()
         res.status(200).json({
-            success: true,
-            filename: rp.filename
+            success: true
         })
     } else {
         console.log("Restoring file")
@@ -23,8 +23,7 @@ router.post('/', auth, (req, res) => {
         console.log("RP ", rp)
 
         res.status(200).json({
-            success: true,
-            filename: rp.filename
+            success: true
         })
     }
 })

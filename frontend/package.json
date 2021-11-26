@@ -10,6 +10,7 @@
     "axios": "^0.22.0",
     "core-js": "^3.6.5",
     "idle-vue": "^2.0.5",
+    "run-parallel": "^1.2.0",
     "vue": "^2.6.11",
     "vue-json-excel": "^0.3.0",
     "vue-router": "^3.2.0",

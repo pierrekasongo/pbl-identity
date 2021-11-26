@@ -55,6 +55,11 @@
     <v-card>
       <v-card-text>
         <v-container>
+          <v-progress-circular
+            v-if="restoring"
+            indeterminate
+            color="red"
+          ></v-progress-circular>
           <v-data-table :headers="headers" :items="files" class="elevation-1">
             <template v-slot:[`item.actions`]="{ item }">
               <v-icon small class="mr-2" @click="selectItem(item)">
@@ -75,6 +80,7 @@ export default {
     return {
       dialog: false,
       generating: false,
+      restoring: false,
       file: null,
       files: [],
       headers: [
@@ -90,17 +96,22 @@ export default {
     generate: function () {
       this.generating = true;
       const options = {
+        method: "POST",
         headers: {
+          "Content-Type": "application/json",
           "x-access-token": "Bearer " + localStorage.getItem("token"),
         },
       };
-      axios
-        .post("/database/", options)
+      fetch("/database/", options)
         .then((resp) => {
           console.log("Generate dispatch");
-          if (resp.success)
-            alert(`Dispatch ${resp.filename} généré avec succès`);
-          else alert("Le processus a echoué");
+          return resp.json();
+        })
+        .then((data) => {
+          console.log("Data ", data);
+          if (data.success) {
+            alert(`Dispatch généré avec succès`);
+          } else alert("Le processus a echoué");
           this.generating = false;
         })
         .catch((err) => {
@@ -118,28 +129,29 @@ export default {
       console.log(this.selectedFile);
       this.dialog = true;
     },
-    initialize(){
+    initialize() {
       const options = {
-      headers: {
-        "x-access-token": "Bearer " + localStorage.getItem("token"),
-      },
-    };
-    axios
-      .get("/database/", options)
-      .then((resp) => {
-        console.log("Get files");
-        console.log("Response ", resp.data);
-        if (resp.data.length > 0) {
-          console.log("Inside");
-          this.files = resp.data;
-        }
-      })
-      .catch((err) => {
-        console.log("ERROR ", err.message);
-      });
+        headers: {
+          "x-access-token": "Bearer " + localStorage.getItem("token"),
+        },
+      };
+      axios
+        .get("/database/", options)
+        .then((resp) => {
+          console.log("Get files");
+          console.log("Response ", resp.data);
+          if (resp.data.length > 0) {
+            console.log("Inside");
+            this.files = resp.data;
+          }
+        })
+        .catch((err) => {
+          console.log("ERROR ", err.message);
+        });
     },
     loadConfirm() {
       console.log("Selected ", this.selectedFile.nom);
+      this.restoring = true;
       const options = {
         method: "POST",
         headers: {
@@ -151,14 +163,16 @@ export default {
       };
       fetch("/database/", options)
         .then((resp) => {
-          console.log("Generate dispatch");
-          console.log("Response ",resp)
-          if (resp.success){
-            alert(`Dispatch chargé avec succès`);
-            this.initialize()
-          }
-          else alert("Le processus a echoué");
-          this.generating = false;
+          console.log("Restoring dispatch");
+          return resp.json();
+        })
+        .then((data) => {
+          console.log("Data ", data);
+          if (data.success) {
+            alert(`Dispatch restauré avec succès`);
+            this.initialize();
+          } else alert("Le processus a echoué");
+          this.restoring = false;
         })
         .catch((err) => {
           console.log("ERROR ", err.message);
@@ -172,7 +186,7 @@ export default {
     },
   },
   created: function () {
-    this.initialize()
+    this.initialize();
   },
 };
 </script>

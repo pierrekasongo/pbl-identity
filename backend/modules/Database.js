@@ -4,12 +4,34 @@ const conf = require('../config/conf')
 const moment = require('moment')
 var MysqlTools = require('mysql-rp-dump');
 const fs = require('fs')
+const path = require('path')
+const fsExtra = require('fs-extra')
 var tool = new MysqlTools();
-const dir = __dirname+'/../'+conf.DISPATCH_PATH
+const dir = __dirname + '/../' + conf.DISPATCH_PATH
 
+_createPhotoDir: async (dirname) => {
+    if (!fs.existsSync(dirname)) {
+        fs.mkdirSync(dirname);
+    }
+}
 const database = {
-    dump: () => {
+
+    dump: async () => {
         console.log("Dumping...")
+        fsExtra.emptyDir(dir)
+        const photoDir = dir + "photos/"
+        fsExtra.ensureDir(photoDir, err => {
+            console.log("Creating photo DIR if not exists")
+            console.log(err) // => null
+            fsExtra.copy(__dirname + '/../' + conf.UPLOADS_PATH, photoDir, function (err) {
+                console.log("copying photo folder...")
+                if (err) {
+                    console.log('An error occured while copying the folder.')
+                    console.error(err)
+                }
+                console.log('Copy completed!')
+            });
+        })
         
         tool.dumpDatabase({
             host: conf.DB_HOST
@@ -18,11 +40,12 @@ const database = {
             , dumpPath: dir
             , database: conf.DB_NAME
         }, function (error, output, message, dumpFileName) {
+            console.log("Dumping database...")
             if (error instanceof Error) {
-                console.log("ERROR ",error);
-                if(error. includes("Warning")){
+                console.log("ERROR ", error);
+                if (error.includes("Warning")) {
                     return { success: true, filename: dumpFileName }
-                }else
+                } else
                     return false
             } else {
                 console.log("Output ", output);
@@ -37,20 +60,21 @@ const database = {
             host: conf.DB_HOST
             , user: conf.DB_USER
             , password: conf.DB_PWD
-            , sqlFilePath: dir+filename
+            , sqlFilePath: dir + filename
             , database: conf.DB_NAME
         }, function (error, output, message) {
             if (error instanceof Error) {
-                console.log("ERROR ",error);
-                if(error. includes("Warning")){
-                    return { success: true, filename: dumpFileName }
-                }else
-                    return false
+                console.error("ERROR ", error);
+                if (error.includes("Warning")) {
+                    return { success: true }
+                } else
+                    return { success: false}
             } else {
-                console.log("Output ",output)
-                console.log("Message ",message)
-                fs.unlinkSync(dir+filename)
-                return { success: true, filename: filename }
+                console.log("Output ", output)
+                console.log("Message ", message)
+                fs.unlinkSync(dir + filename)
+                return { success: true}
+
             }
         });
     }
