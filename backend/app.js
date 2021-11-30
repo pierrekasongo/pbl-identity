@@ -29,9 +29,9 @@ app.use('/database', databaseRouter)
 
 app.listen(3000, () => {
     console.log("Le serveur est à l'écoute")
-    /*const url = 'http://localhost:3000';
+    const url = 'http://localhost:3000';
     const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
-    require('child_process').exec(start + ' ' + url);*/
+    require('child_process').exec(start + ' ' + url);
 })
 
 /**
