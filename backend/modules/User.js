@@ -2,8 +2,22 @@ var express = require('express')
 const crypto = require('crypto')
 const db = require('../utils/db')
 const Utils = require('../utils/Utils')
+const jwt = require('jsonwebtoken')
+const conf = require('../config/conf')
+
 const user = {
 
+    createToken :(id, login) =>{
+
+        const token =  jwt.sign(
+                { user_id: id, login },
+                conf.TOKEN_KEY,
+                {
+                        expiresIn: "2h",
+                },
+            )
+        return token
+    },
     find: () => {
         let res;
         return new Promise(function (resolve, reject) {

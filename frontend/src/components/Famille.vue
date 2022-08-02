@@ -329,10 +329,9 @@ export default {
         .then((resp) => {
           if (resp.status == 401) {
             this.$router.push("/login");
-          } else return resp.json();
+          } 
         })
         .then((data) => {
-          console.log("ID ", data.count);
           if (data.count > 0) {
             this.initialize();
           }
@@ -409,11 +408,11 @@ export default {
             nom: this.editedItem.nom,
             postnom: this.editedItem.postnom,
             sexe: this.editedItem.sexe,
-            date_naissance: this.editedItem.date_naissance,
+            date_naissance: this.formattedDate,
             relation: this.editedItem.relation,
             localisation: this.editedItem.localisation,
             parent: this.parentId,
-            num_dossier: this.num_dossier,
+            num_dossier: this.editedItem.num_dossier,
           }),
         };
         fetch(`/client/`, options)

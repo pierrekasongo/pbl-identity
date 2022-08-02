@@ -71,7 +71,7 @@ router.get('/relation', (req, res) => {
 })
 
 router.post('/', auth, (req, res) => {
-    console.log("POSTING")
+   
     let prenom = req.body.prenom
     let nom = req.body.nom
     let postnom = req.body.postnom
@@ -81,10 +81,13 @@ router.post('/', auth, (req, res) => {
     let photo = ""
     let num_id = req.body.matricule || null
     let num_dossier = req.body.num_dossier
-    let entreprise = req.body.entreprise || null
+    let entrep = req.body.entreprise || null
+
+    let entreprise = entrep
+
     let parent = req.body.parent || 0
     let relation = req.body.relation || "Agent"
-    Client.create(prenom, nom, postnom, sexe, date_naissance, photo,
+    Client.create(prenom, nom, postnom, sexe, date_naissance,
         localisation, num_id, num_dossier, entreprise, parent, relation)
         .then(data => {
             res.status(200).json({ count: data.affectedRows })

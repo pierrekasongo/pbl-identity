@@ -134,7 +134,7 @@ const client = {
             }
         })
     },
-    create: (prenom, nom, postnom, sexe, date_naissance, photo, localisation,
+    create: (prenom, nom, postnom, sexe, date_naissance, localisation,
         num_id, num_dossier,entreprise, parent, relation) => {
         return new Promise(function (resolve, reject) {
             try {
@@ -183,7 +183,7 @@ const client = {
         })
     },
     update: (id, prenom, nom, postnom, sexe, date_naissance, localisation,
-        num_id, entreprise) => {
+        num_id, num_dossier,entreprise) => {
         return new Promise(function (resolve, reject) {
             try {
                 const req = `UPDATE client SET prenom = ?,nom=?, postnom=?,sexe=?,date_naissance=?,

@@ -38,30 +38,27 @@ router.post('/', auth, (req, res) => {
 })
 
 router.post('/auth', (req, res) => {
+    //root:root@pbl.org
     console.log("Authenticate a user")
     const login = req.body.login
     const password = req.body.password
     const checkPass = req.body.checkPass || false
 
-    let _password = Utils.hash(password, login)
     let data
+
+    let user = { id: 0 }
+
+    let token = ''
+
+    let _password = Utils.hash(password, login)
+
     User.login(login, _password).then(data => {
-        console.log("Resp ", data)
         const _user = data[0]
-        console.log("_user ", _user)
-        let token = ''
-        //Create token
+
         if (!checkPass && _user != undefined) {
-            console.log("Creating token...")
-            token = jwt.sign(
-                { user_id: _user.id, login },
-                conf.TOKEN_KEY,
-                {
-                    expiresIn: "2h",
-                },
-            )
+            token = User.createToken(_user.id, login)
         }
-        let user = { id: 0 }
+        
         if (_user) {
             user = {
                 id: _user.id,
@@ -73,7 +70,6 @@ router.post('/auth', (req, res) => {
                 loggedin: true
             }
         }
-        console.log(user)
         if (user.id > 0)
             res.status(200).json(user)
         else

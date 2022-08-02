@@ -561,7 +561,7 @@ export default {
             localisation: this.editedItem.localisation,
             entreprise: this.editedItem.entreprise_id,
             matricule: this.editedItem.num_id,
-            num_dossier: this.editItem.num_dossier,
+            num_dossier: this.editedItem.num_dossier,
           }),
         };
         fetch(`/client/`, options)
@@ -592,11 +592,11 @@ export default {
             nom: this.editedItem.nom,
             postnom: this.editedItem.postnom,
             sexe: this.editedItem.sexe,
-            date_naissance: this.editedItem.date_naissance,
+            date_naissance: this.formattedDate,
             localisation: this.editedItem.localisation,
             entreprise: this.editedItem.entreprise_id,
-            matricule: this.editedItem.matricule,
-            num_dossier: this.editItem.num_dossier,
+            matricule: this.editedItem.num_id,
+            num_dossier: this.editedItem.num_dossier,
           }),
         };
         fetch(`/client/`, options)
@@ -606,8 +606,8 @@ export default {
             } else return resp.json();
           })
           .then((data) => {
-            console.log("ID ", data.id);
-            if (data.id > 0) {
+            console.log("COUNT ", data.count);
+            if (data.count > 0) {
               this.initialize();
               //this.data.push(this.editedItem)
             }

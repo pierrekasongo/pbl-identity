@@ -135,15 +135,11 @@ export default {
           "x-access-token": "Bearer " + localStorage.getItem("token"),
         },
       };
-      axios
-        .get("/database/", options)
-        .then((resp) => {
-          console.log("Get files");
-          console.log("Response ", resp.data);
-          if (resp.data.length > 0) {
-            console.log("Inside");
-            this.files = resp.data;
-          }
+       fetch("/database/", options)
+        .then(response => response.json())
+        .then((json) => {
+          console.log(json)
+          this.files = json;
         })
         .catch((err) => {
           console.log("ERROR ", err.message);

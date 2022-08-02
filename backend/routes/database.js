@@ -37,8 +37,7 @@ router.get('/', auth, (req, res) => {
             return null
         }
         _files.forEach(function (file) {
-            console.log(file)
-            files.push({ nom: file })
+            files.push({"nom":file})
         })
         res.status(200).json(files)
     })

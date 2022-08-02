@@ -26,7 +26,7 @@ const visite = {
     find: (id) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const req = `(SELECT v.id AS id, DATE_FORMAT(c.date_naissance, '%d-%m-%Y') AS date_visite,
+                const req = `(SELECT v.id AS id, DATE_FORMAT(v.date_visite, '%d-%m-%Y') AS date_visite,
                             v.motif AS motif, u.nom AS utilisateur,
                             CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                             FROM visite v, utilisateur u, client c 
@@ -36,7 +36,7 @@ const visite = {
                             
                             UNION 
                             
-                            (SELECT v.id AS id,  DATE_FORMAT(c.date_naissance, '%d-%m-%Y') AS date_visite,
+                            (SELECT v.id AS id,  DATE_FORMAT(v.date_visite, '%d-%m-%Y') AS date_visite,
                             v.motif AS motif, u.nom AS utilisateur,
                             CONCAT(c.nom,' ',c.postnom,' ',c.prenom) AS client
                             FROM visite v, utilisateur u, client c 
@@ -45,6 +45,7 @@ const visite = {
                             AND v.client IN(SELECT id FROM client WHERE parent = ?) )`
                 db.query(req, [id,id], function (err, result, fields) {
                     if (err) throw err;
+                    console.log("RES", result);
                     resolve(result)
                 });
             } catch (err) {

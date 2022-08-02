@@ -289,29 +289,33 @@ export default {
     save() {
       console.log("POSTING");
       const options = {
-        motif: this.editedItem.motif,
-        date_visite: this.editedItem.date_visite,
-        utilisateur: localStorage.getItem("user_id"),
-        patient: this.clientId,
-      };
-      const headers = {
-        "Content-Type": "application/json",
-        "x-access-token": "Bearer " + localStorage.getItem("token"),
-      };
-      axios
-        .post(`/visite/`, options, { headers })
-        .then((resp) => {
-          console.log("Result ", resp);
-          if (resp.status == 401) {
-            this.$router.push("/login");
-          }
-          if (resp.status == 200) {
-            this.initialize();
-          }
+        method:"POST",
+        headers : {
+          "Content-Type": "application/json",
+          "x-access-token": "Bearer " + localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          motif: this.editedItem.motif,
+          date_visite: this.editedItem.date_visite,
+          utilisateur: localStorage.getItem("user_id"),
+          patient: this.clientId
         })
-        .catch((err) => {
-          console.log("ERROR ", err);
-        });
+      };
+      fetch(`/visite/`, options)
+          .then((resp) => {
+            if (resp.status == 401) {
+              this.$router.push("/login");
+            } else return resp.json();
+          })
+          .then((data) => {
+            console.log("ID ", data.count);
+            if (data.count > 0) {
+              this.initialize();
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       this.close();
     },
   },

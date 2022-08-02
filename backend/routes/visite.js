@@ -11,6 +11,7 @@ router.get('/:id', auth,(req,res)=>{
     if(clientId > 0){
         console.log("Find Visites by Client")
         Visite.find(clientId).then(data =>{
+            console.log("data",data)
             res.status(200).json(data)
          })  
     }else{

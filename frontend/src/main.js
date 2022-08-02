@@ -21,5 +21,8 @@ new Vue({
   router,
   store,
   vuetify,
+  onIdle() {
+    this.$store.commit("logout");
+  },
   render: h => h(App)
 }).$mount('#app')

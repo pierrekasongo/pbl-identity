@@ -261,8 +261,8 @@
           fetch(`/entreprise`, options).then(resp => {
               return resp.json()
             }).then(data =>{
-            console.log("ID ",data.id)
-            if(data.id > 0){
+            console.log("ID ",data.count)
+            if(data.count > 0){
               this.initialize()
               //this.data.push(this.editedItem)
             }
